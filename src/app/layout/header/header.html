@@ -1,0 +1,47 @@
+<header class="header">
+
+  <div class="header-left">
+
+    <button
+      class="menu-btn"
+      aria-label="Toggle sidebar"
+      (click)="toggleSidebar.emit()">
+
+      <i class="pi pi-bars"></i>
+
+    </button>
+
+    <div class="app-name">
+      <i class="pi pi-check-circle text-success"></i>
+      <span>Donezo</span>
+    </div>
+
+  </div>
+
+  <div class="search-box">
+
+    <i class="pi pi-search"></i>
+
+    <input
+      type="text"
+      placeholder="Search task"
+      class="form-control"
+    />
+
+  </div>
+
+  <div class="header-actions">
+
+    <button class="icon-btn">
+      <i class="pi pi-envelope"></i>
+    </button>
+
+    <button class="icon-btn">
+      <i class="pi pi-bell"></i>
+    </button>
+
+    <p-avatar label="KM" shape="circle"></p-avatar>
+
+  </div>
+
+</header>

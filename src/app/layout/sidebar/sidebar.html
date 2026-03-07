@@ -1,0 +1,69 @@
+<aside class="sidebar" aria-label="Application sidebar">
+  <nav class="sidebar-nav" aria-labelledby="main-nav-title">
+    <p id="main-nav-title" class="sidebar-section-title">Menu</p>
+
+    <ul class="nav flex-column">
+      <li class="nav-item" *ngFor="let item of menuItems">
+        <!-- Simple Link -->
+        <a
+          *ngIf="!item.children"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nav-link"
+        >
+          <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </a>
+
+        <!-- Parent Menu -->
+        <div *ngIf="item.children">
+          <button
+            class="nav-link parent-menu"
+            (click)="toggleMenu(item)"
+            aria-expanded="{{ item.expanded }}"
+          >
+            <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
+
+            <span>{{ item.label }}</span>
+
+            <i
+              class="pi toggle-icon"
+              [ngClass]="item.expanded ? 'pi-chevron-down' : 'pi-chevron-right'"
+            >
+            </i>
+          </button>
+
+          <ul *ngIf="item.expanded" class="nav flex-column child-menu">
+            <li *ngFor="let child of item.children">
+              <a [routerLink]="child.route" routerLinkActive="active" class="nav-link child-link">
+                {{ child.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Bottom Navigation -->
+
+  <nav class="sidebar-bottom" aria-labelledby="general-nav-title">
+    <p id="general-nav-title" class="sidebar-section-title">General</p>
+
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+          <i class="pi pi-cog" aria-hidden="true"></i>
+          <span>Settings</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/help" routerLinkActive="active" class="nav-link">
+          <i class="pi pi-question-circle" aria-hidden="true"></i>
+          <span>Help</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
