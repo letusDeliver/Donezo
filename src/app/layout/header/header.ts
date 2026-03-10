@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { AvatarModule } from 'primeng/avatar';
+import { PRIMENG_IMPORTS } from '../../shared/ui/primeng-imports';
 
 @Component({
   selector: 'app-header',
-  imports: [AvatarModule],
+  imports: [...PRIMENG_IMPORTS],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

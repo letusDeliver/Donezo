@@ -68,14 +68,14 @@
   transform: translateX(3px);
 }
 
-/* Active */
+/* Active link */
 
 .nav-link.active {
   background: #198754;
   color: #fff;
 }
 
-/* Active indicator bar (subtle SaaS style) */
+/* Active indicator bar */
 
 .nav-link.active::before {
   content: '';
@@ -91,44 +91,77 @@
   border-radius: 2px;
 }
 
+/* Parent container highlight */
+
+.parent-container.parent-active > .parent-menu {
+  background: #198754;
+  color: white;
+}
+
 /* Accessibility focus */
 
-.nav-link:focus-visible {
+.nav-link:focus-visible,
+.parent-menu:focus-visible {
   outline: 2px solid #198754;
   outline-offset: 2px;
 }
+
+/* Parent Menu */
 
 .parent-menu {
   width: 100%;
   border: none;
   background: none;
   text-align: left;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   cursor: pointer;
+  font-weight: 600;
 }
+
+/* Toggle icon */
 
 .toggle-icon {
   margin-left: auto;
   font-size: 12px;
+  transition: transform 0.2s ease;
 }
+
+.rotated {
+  transform: rotate(90deg);
+}
+
+/* Child menu */
 
 .child-menu {
   margin-left: 28px;
+
+  max-height: 0;
+  overflow: hidden;
+
+  opacity: 0;
+
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease;
 }
+
+.child-menu.expanded {
+  max-height: 300px;
+  opacity: 1;
+}
+
+/* Child links */
 
 .child-link {
   font-size: 14px;
   padding: 6px 10px;
 }
 
-.parent-menu {
-  cursor: default;
-  font-weight: 600;
-}
-
-/* Scrollbar styling */
+/* Scrollbar */
 
 .sidebar::-webkit-scrollbar {
   width: 6px;

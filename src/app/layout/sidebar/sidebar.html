@@ -1,26 +1,39 @@
 <aside class="sidebar" aria-label="Application sidebar">
+  <!-- MAIN NAVIGATION -->
+
   <nav class="sidebar-nav" aria-labelledby="main-nav-title">
     <p id="main-nav-title" class="sidebar-section-title">Menu</p>
 
-    <ul class="nav flex-column">
-      <li class="nav-item" *ngFor="let item of menuItems">
-        <!-- Simple Link -->
+    <ul class="nav flex-column" role="menu">
+      <li class="nav-item mb-2" *ngFor="let item of menuItems">
+        <!-- SIMPLE LINK -->
+
         <a
           *ngIf="!item.children"
           [routerLink]="item.route"
           routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="nav-link"
+          role="menuitem"
         >
           <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
           <span>{{ item.label }}</span>
         </a>
 
-        <!-- Parent Menu -->
-        <div *ngIf="item.children">
+        <!-- PARENT MENU -->
+
+        <div
+          *ngIf="item.children"
+          class="parent-container"
+          [class.parent-active]="isParentActive(item)"
+        >
           <button
             class="nav-link parent-menu"
             (click)="toggleMenu(item)"
-            aria-expanded="{{ item.expanded }}"
+            (keydown.enter)="toggleMenu(item)"
+            (keydown.space)="toggleMenu(item)"
+            [attr.aria-expanded]="item.expanded"
+            [attr.aria-controls]="item.label + '-submenu'"
           >
             <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
 
@@ -28,14 +41,26 @@
 
             <i
               class="pi toggle-icon"
-              [ngClass]="item.expanded ? 'pi-chevron-down' : 'pi-chevron-right'"
-            >
-            </i>
+              [ngClass]="item.expanded ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
+            ></i>
           </button>
 
-          <ul *ngIf="item.expanded" class="nav flex-column child-menu">
+          <!-- CHILD MENU -->
+
+          <ul
+            class="nav flex-column child-menu"
+            [class.expanded]="item.expanded"
+            [id]="item.label + '-submenu'"
+            role="menu"
+          >
             <li *ngFor="let child of item.children">
-              <a [routerLink]="child.route" routerLinkActive="active" class="nav-link child-link">
+              <a
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="nav-link child-link mt-2"
+                role="menuitem"
+              >
                 {{ child.label }}
               </a>
             </li>
@@ -45,21 +70,21 @@
     </ul>
   </nav>
 
-  <!-- Bottom Navigation -->
+  <!-- GENERAL NAVIGATION -->
 
   <nav class="sidebar-bottom" aria-labelledby="general-nav-title">
     <p id="general-nav-title" class="sidebar-section-title">General</p>
 
-    <ul class="nav flex-column">
+    <ul class="nav flex-column" role="menu">
       <li class="nav-item">
-        <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+        <a routerLink="/settings" routerLinkActive="active" class="nav-link" role="menuitem">
           <i class="pi pi-cog" aria-hidden="true"></i>
           <span>Settings</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a routerLink="/help" routerLinkActive="active" class="nav-link">
+        <a routerLink="/help" routerLinkActive="active" class="nav-link" role="menuitem">
           <i class="pi pi-question-circle" aria-hidden="true"></i>
           <span>Help</span>
         </a>
