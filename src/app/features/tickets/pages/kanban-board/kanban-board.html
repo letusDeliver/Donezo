@@ -1,0 +1,27 @@
+<!-- 🔥 Search -->
+<div style="margin-bottom: 10px;">
+  <input
+    type="text"
+    placeholder="Search tickets..."
+    (input)="onSearch($event.target.value)"
+  />
+</div>
+
+<div class="kanban-wrapper">
+  <div class="kanban-board">
+
+    <div
+      class="kanban-column-wrapper"
+      *ngFor="let col of statuses"
+    >
+      <app-kanban-column
+        [title]="col.label"
+        [status]="col.key"
+        [tickets]="columnsData[col.key].data"
+        [loading]="columnsData[col.key].loading"
+        [loadMore]="loadTickets.bind(this)">
+      </app-kanban-column>
+    </div>
+
+  </div>
+</div>

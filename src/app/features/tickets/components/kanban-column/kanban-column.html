@@ -1,0 +1,22 @@
+<div class="kanban-column">
+
+  <div class="column-header">
+    <h6>{{ title }}</h6>
+    <span class="count">{{ tickets.length }}</span>
+  </div>
+
+  <div class="column-body" (scroll)="onScroll($event)">
+
+    <app-ticket-card
+      *ngFor="let ticket of tickets"
+      [ticket]="ticket">
+    </app-ticket-card>
+
+    <!-- 🔥 Loading indicator -->
+    <div *ngIf="loading" style="text-align:center; padding:10px;">
+      Loading...
+    </div>
+
+  </div>
+
+</div>

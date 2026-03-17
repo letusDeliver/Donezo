@@ -1,0 +1,92 @@
+.kanban-column {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  overflow: hidden; // ✅ important (prevents double scroll)
+}
+
+/* Header */
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 10px;
+  font-weight: 600;
+
+  flex-shrink: 0; // ✅ prevents shrinking
+}
+
+/* Ticket count badge */
+
+.count {
+  background: #e9ecef;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* Body */
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  flex: 1;              // ✅ take remaining space
+  overflow-y: auto;     // ✅ scroll ONLY when needed
+  padding: 4px;   // ✅ avoid content cut by scrollbar
+}
+
+/* Minimal scrollbar */
+
+.column-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.column-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.column-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+/* Hide scrollbar until hover (premium feel) */
+
+.column-body::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.column-body:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Status colors (optional border highlight) */
+
+.kanban-column.backlog {
+  border-top: 3px solid #6c757d;
+}
+
+.kanban-column.todo {
+  border-top: 3px solid #0d6efd;
+}
+
+.kanban-column.inprogress {
+  border-top: 3px solid #fd7e14;
+}
+
+.kanban-column.review {
+  border-top: 3px solid #6f42c1;
+}
+
+.kanban-column.done {
+  border-top: 3px solid #198754;
+}

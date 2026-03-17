@@ -38,7 +38,7 @@
 /* Scrollable content */
 .content-area {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden; // ✅ FIXED (was auto)
   background: #f8f9fa;
 }
 
