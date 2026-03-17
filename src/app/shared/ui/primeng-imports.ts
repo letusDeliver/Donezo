@@ -6,6 +6,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { SelectModule } from 'primeng/select';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 export const PRIMENG_IMPORTS = [
   ButtonModule,
@@ -15,5 +18,8 @@ export const PRIMENG_IMPORTS = [
   InputTextModule,
   AvatarModule,
   BadgeModule,
-  ProgressBarModule
+  ProgressBarModule,
+  SelectModule,
+  InputGroupModule,
+  InputGroupAddonModule
 ];

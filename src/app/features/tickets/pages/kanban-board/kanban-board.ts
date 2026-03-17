@@ -5,11 +5,13 @@ import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { KanbanColumn } from '../../components/kanban-column/kanban-column';
 import { debounceTime, Subject } from 'rxjs';
+import { TicketFilter } from '../../models/ticket-filter.model';
+import { TicketFilters } from '../../components/ticket-filters/ticket-filters';
 
 @Component({
   standalone: true,
   selector: 'app-kanban-board',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, KanbanColumn],
+  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, KanbanColumn, TicketFilters],
   templateUrl: './kanban-board.html',
   styleUrl: './kanban-board.scss',
 })
@@ -32,18 +34,21 @@ export class KanbanBoard {
     }
   > = {};
 
-  filters: any = {
+  filters: TicketFilter = {
     search: '',
     priority: '',
     type: '',
+    assignee: '',
   };
-
-  searchSubject = new Subject<string>();
 
   constructor(private ticketService: TicketService) {}
 
   ngOnInit() {
-    // 🔥 init columns
+    this.initializeColumns();
+  }
+
+  /* 🔥 Initialize all columns */
+  initializeColumns() {
     this.statuses.forEach((col) => {
       this.columnsData[col.key] = {
         data: [],
@@ -54,14 +59,9 @@ export class KanbanBoard {
 
       this.loadTickets(col.key);
     });
-
-    // 🔥 debounce search
-    this.searchSubject.pipe(debounceTime(300)).subscribe((value) => {
-      this.filters.search = value;
-      this.applyFilters();
-    });
   }
 
+  /* 🔥 Load tickets per column */
   loadTickets(status: string) {
     const col = this.columnsData[status];
 
@@ -77,7 +77,11 @@ export class KanbanBoard {
     });
   }
 
-  applyFilters() {
+  /* 🔥 Handle filters from child */
+  applyFilters(filters: TicketFilter) {
+    this.filters = filters;
+
+    // Reset all columns
     this.statuses.forEach((col) => {
       this.columnsData[col.key] = {
         data: [],
@@ -88,9 +92,5 @@ export class KanbanBoard {
 
       this.loadTickets(col.key);
     });
-  }
-
-  onSearch(value: string) {
-    this.searchSubject.next(value);
   }
 }

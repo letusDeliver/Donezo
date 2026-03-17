@@ -1,27 +1,19 @@
-<!-- 🔥 Search -->
-<div style="margin-bottom: 10px;">
-  <input
-    type="text"
-    placeholder="Search tickets..."
-    (input)="onSearch($event.target.value)"
-  />
-</div>
+<!-- 🔥 Filters Component -->
 
 <div class="kanban-wrapper">
+  <div class="mb-2">
+    <app-ticket-filters (filtersChange)="applyFilters($event)"> </app-ticket-filters>
+  </div>
   <div class="kanban-board">
-
-    <div
-      class="kanban-column-wrapper"
-      *ngFor="let col of statuses"
-    >
+    <div class="kanban-column-wrapper" *ngFor="let col of statuses">
       <app-kanban-column
         [title]="col.label"
         [status]="col.key"
         [tickets]="columnsData[col.key].data"
         [loading]="columnsData[col.key].loading"
-        [loadMore]="loadTickets.bind(this)">
+        [loadMore]="loadTickets.bind(this)"
+      >
       </app-kanban-column>
     </div>
-
   </div>
 </div>

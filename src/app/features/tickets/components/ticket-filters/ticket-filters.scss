@@ -1,0 +1,110 @@
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 🔥 Row */
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Each item */
+.filter-item {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* Search wider */
+.filter-item.search {
+  flex: 2;
+}
+
+/* 🔍 Input group */
+::ng-deep .p-inputgroup {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+::ng-deep .p-inputgroup-addon {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-right: none;
+  color: var(--text-muted);
+}
+
+/* 🔥 Input */
+::ng-deep .p-inputtext {
+  border-left: none !important;
+}
+
+/* 🔥 Dropdown spacing fix */
+::ng-deep .p-select {
+  width: 100%;
+}
+
+/* 🧹 Clear button custom */
+.clear-btn-custom {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.clear-btn-custom:hover {
+  background: #dc2626;
+}
+
+/* 🔥 Chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  background: #eef2ff;
+  color: var(--primary-color);
+  border: 1px solid #e0e7ff;
+
+  transition: 0.2s;
+}
+
+.chip:hover {
+  background: #e0e7ff;
+}
+
+.chip button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* 📱 Mobile */
+@media (max-width: 768px) {
+  .filter-item {
+    flex: 100%;
+  }
+
+  .clear-btn {
+    width: 100%;
+  }
+}

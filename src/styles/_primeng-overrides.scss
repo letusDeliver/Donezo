@@ -1,0 +1,41 @@
+/* 🔥 INPUT + DROPDOWN */
+.p-inputtext,
+.p-select {
+  background: #ffffff !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  color: var(--text-color) !important;
+}
+
+/* Focus */
+.p-inputtext:focus,
+.p-select.p-focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
+}
+
+/* 🔥 DROPDOWN PANEL (THIS FIXES YOUR MAIN ISSUE) */
+.p-select-panel {
+  background: #ffffff !important;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.p-select-item {
+  color: var(--text-color);
+}
+
+.p-select-item:hover {
+  background: #f3f4f6;
+}
+
+.p-select-item.p-highlight {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* 🔥 BUTTON */
+.p-button {
+  border-radius: 8px;
+}

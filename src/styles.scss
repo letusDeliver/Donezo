@@ -1,4 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+/* GLOBAL STYLES ENTRY POINT */
+
+/* Import order matters */
+@use './styles/variables';
+@use './styles/layout';
+@use './styles/primeng-overrides';
+
+/* Base app styles */
 body {
   background: #f3f4f6;
   font-family: Inter, system-ui, sans-serif;

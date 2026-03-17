@@ -1,0 +1,95 @@
+<div class="filters-container">
+  <div class="filters-row">
+    <!-- 🔍 Search -->
+    <div class="filter-item search">
+      <p-inputgroup>
+        <input
+          pInputText
+          placeholder="Keyword"
+          [(ngModel)]="filters.search"
+          (input)="onFilterChange()"
+          aria-label="Search tickets"
+        />
+
+        <p-inputgroup-addon>
+          <p-button
+            icon="pi pi-search"
+            severity="secondary"
+            variant="text"
+            aria-label="Search"
+          />
+        </p-inputgroup-addon>
+      </p-inputgroup>
+    </div>
+
+    <!-- 🚩 Priority -->
+    <div class="filter-item">
+      <p-select
+        [options]="priorities"
+        [(ngModel)]="selectedPriority"
+        optionLabel="name"
+        placeholder="Priority"
+        appendTo="body"
+        (onChange)="onSelectChange()"
+        aria-label="Filter by priority"
+      />
+    </div>
+
+    <!-- 🐞 Type -->
+    <div class="filter-item">
+      <p-select
+        [options]="types"
+        [(ngModel)]="selectedType"
+        optionLabel="name"
+        placeholder="Type"
+        appendTo="body"
+        (onChange)="onSelectChange()"
+        aria-label="Filter by type"
+      />
+    </div>
+
+    <!-- 👤 Assignee -->
+    <div class="filter-item">
+      <p-select
+        [options]="assignees"
+        [(ngModel)]="selectedAssignee"
+        optionLabel="name"
+        placeholder="Assignee"
+        appendTo="body"
+        (onChange)="onSelectChange()"
+        aria-label="Filter by assignee"
+      />
+    </div>
+
+    <!-- 🧹 Clear -->
+    <div class="filter-item clear-btn">
+      <button
+        type="button"
+        class="clear-btn-custom"
+        (click)="clearAll()"
+        aria-label="Clear all filters"
+      >
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <!-- 🏷️ Chips -->
+  <div class="chips" *ngIf="activeFilters.length" role="list">
+    <span
+      class="chip"
+      *ngFor="let filter of activeFilters"
+      role="listitem"
+    >
+      {{ filter.label }}
+
+      <button
+        type="button"
+        (click)="removeFilter(filter.key)"
+        aria-label="Remove {{ filter.label }}"
+      >
+        ✕
+      </button>
+    </span>
+  </div>
+</div>
