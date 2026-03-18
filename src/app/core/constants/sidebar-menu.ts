@@ -10,17 +10,12 @@ export const SIDEBAR_MENU: SidebarMenuItem[] = [
   {
     label: 'Projects',
     icon: 'pi pi-briefcase',
-    expanded: false,
-    children: [
-      {
-        label: 'All Projects',
-        route: '/projects',
-      },
-      {
-        label: 'User Stories',
-        route: '/projects/user-stories',
-      },
-    ],
+    route: '/projects',
+  },
+  {
+    label: 'User Stories',
+    icon: 'pi pi-book',
+    route: '/user-stories',
   },
 
   {

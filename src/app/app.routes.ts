@@ -15,9 +15,18 @@ export const routes: Routes = [
     path: 'projects',
     loadChildren: () => import('./features/projects/project.routes').then((m) => m.PROJECT_ROUTES),
   },
-    {
+  {
     path: 'tickets',
     loadChildren: () => import('./features/tickets/ticket.routes').then((m) => m.TICKET_ROUTES),
+  },
+  {
+    path: 'user-stories',
+    loadChildren: () =>
+      import('./features/user-stories/user-stories.routes').then((m) => m.USER_STORIES_ROUTES),
+  },
+  {
+    path: 'tasks',
+    loadChildren: () => import('./features/tasks/tasks.routes').then((m) => m.TASKS_ROUTES),
   },
   {
     path: '**',

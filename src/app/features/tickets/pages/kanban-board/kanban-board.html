@@ -1,12 +1,15 @@
-<!-- 🔥 Filters Component -->
-
 <div class="kanban-wrapper">
-  <div class="mb-2">
-    <app-ticket-filters (filtersChange)="applyFilters($event)"> </app-ticket-filters>
+
+  <!-- Sticky Filters -->
+  <div class="filters-bar">
+    <app-ticket-filters (filtersChange)="applyFilters($event)"></app-ticket-filters>
   </div>
+
+  <!-- Board -->
   <div class="kanban-board">
     <div class="kanban-column-wrapper" *ngFor="let col of statuses">
       <app-kanban-column
+        class="kanban-column"
         [title]="col.label"
         [status]="col.key"
         [tickets]="columnsData[col.key].data"
@@ -16,4 +19,5 @@
       </app-kanban-column>
     </div>
   </div>
+
 </div>

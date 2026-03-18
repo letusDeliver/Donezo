@@ -1,4 +1,4 @@
-/*  Wrapper (now flex column layout) */
+/* 🔥 Wrapper */
 .kanban-wrapper {
   display: flex;
   flex-direction: column;
@@ -6,30 +6,39 @@
   padding: 16px;
   height: calc(100vh - 80px);
 
-  overflow: hidden; // prevent outer scroll
+  background: #f8fafc;
+  overflow: hidden;
 }
 
-/*  Filters section (optional spacing) */
-.kanban-wrapper > app-ticket-filters {
-  flex-shrink: 0; // don't shrink filters
-  margin-bottom: 12px;
+/* 🔝 Sticky Filters */
+.filters-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  background: #f8fafc;
+  padding-bottom: 8px;
+
+  flex-shrink: 0;
 }
 
-/*  Kanban board (takes remaining height) */
+/* 🔥 Kanban Board */
 .kanban-board {
-  flex: 1;                //  VERY IMPORTANT
-  min-height: 0;          // prevents flex overflow bugs
+  flex: 1;
+  min-height: 0;
 
   display: flex;
   gap: 16px;
 
-  overflow-x: auto;       // horizontal scroll
+  padding-bottom: 8px;
+
+  overflow-x: auto;
   overflow-y: hidden;
 
   scroll-behavior: smooth;
 }
 
-/* Clean horizontal scrollbar */
+/* 🧼 Scrollbar */
 .kanban-board::-webkit-scrollbar {
   height: 6px;
 }
@@ -39,19 +48,82 @@
 }
 
 .kanban-board::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(100, 116, 139, 0.4);
   border-radius: 10px;
 }
 
-/*  Column wrapper */
-.kanban-column-wrapper {
-  flex: 0 0 280px;   // fixed width columns
-  height: 100%;
+.kanban-board::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
 }
 
-/*  Mobile responsiveness */
+/* 📦 Column wrapper */
+.kanban-column-wrapper {
+  flex: 0 0 300px;
+  height: 100%;
+  display: flex;
+}
+
+/* 🧱 Column Card */
+.kanban-column {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+}
+
+.kanban-column:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* 📌 Sticky Column Header */
+.column-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  background: #ffffff;
+  padding-bottom: 8px;
+}
+
+/* 📜 Column Body Scroll */
+.column-body {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+/* 🎟️ Ticket Card */
+.ticket-card {
+  border-radius: 12px;
+  background: #fff;
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 📭 Empty State */
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* 📱 Mobile */
 @media (max-width: 768px) {
   .kanban-column-wrapper {
     flex: 0 0 85%;
+  }
+
+  .kanban-wrapper {
+    padding: 10px;
   }
 }
