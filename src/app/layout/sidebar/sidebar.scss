@@ -5,10 +5,28 @@
   padding: 24px;
   background: #fafafa;
   overflow-y: auto;
+  transition: all 0.25s ease;
 }
 
-/* Section titles */
+/* BRANDING */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
+  font-size: 18px;
+  font-weight: 700;
+  color: #212529;
+
+  margin-bottom: 20px;
+  padding-left: 4px;
+}
+
+.sidebar-brand i {
+  font-size: 20px;
+}
+
+/* 🔹 SECTION TITLES */
 .sidebar-section-title {
   font-size: 12px;
   font-weight: 600;
@@ -17,8 +35,7 @@
   margin-bottom: 10px;
 }
 
-/* Navigation */
-
+/* NAVIGATION */
 .sidebar-nav {
   flex: 1;
 }
@@ -27,8 +44,7 @@
   margin-top: auto;
 }
 
-/* Links */
-
+/* LINKS */
 .nav-link {
   display: flex;
   align-items: center;
@@ -42,40 +58,30 @@
 
   position: relative;
 
-  transition:
-    background 0.2s ease,
-    transform 0.15s ease,
-    color 0.15s ease;
+  transition: all 0.2s ease;
 }
 
-/* Icon styling */
-
+/* ICON */
 .nav-link i {
   font-size: 16px;
   transition: transform 0.2s ease;
 }
 
-/* Hover */
-
+/* HOVER */
 .nav-link:hover {
   background: #f1f3f5;
   color: #212529;
 }
 
-/* Icon slide effect */
-
 .nav-link:hover i {
   transform: translateX(3px);
 }
 
-/* Active link */
-
+/* ACTIVE */
 .nav-link.active {
   background: #198754;
   color: #fff;
 }
-
-/* Active indicator bar */
 
 .nav-link.active::before {
   content: '';
@@ -91,23 +97,20 @@
   border-radius: 2px;
 }
 
-/* Parent container highlight */
-
+/* PARENT ACTIVE */
 .parent-container.parent-active > .parent-menu {
   background: #198754;
   color: white;
 }
 
-/* Accessibility focus */
-
+/* FOCUS */
 .nav-link:focus-visible,
 .parent-menu:focus-visible {
   outline: 2px solid #198754;
   outline-offset: 2px;
 }
 
-/* Parent Menu */
-
+/* PARENT MENU */
 .parent-menu {
   width: 100%;
   border: none;
@@ -122,8 +125,7 @@
   font-weight: 600;
 }
 
-/* Toggle icon */
-
+/* TOGGLE ICON */
 .toggle-icon {
   margin-left: auto;
   font-size: 12px;
@@ -134,19 +136,15 @@
   transform: rotate(90deg);
 }
 
-/* Child menu */
-
+/* CHILD MENU */
 .child-menu {
   margin-left: 28px;
 
   max-height: 0;
   overflow: hidden;
-
   opacity: 0;
 
-  transition:
-    max-height 0.25s ease,
-    opacity 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .child-menu.expanded {
@@ -154,15 +152,47 @@
   opacity: 1;
 }
 
-/* Child links */
-
+/* CHILD LINK */
 .child-link {
   font-size: 14px;
   padding: 6px 10px;
 }
 
-/* Scrollbar */
+/* COLLAPSED MODE */
+.sidebar.collapsed {
+  padding: 16px 8px;
 
+  .sidebar-section-title {
+    display: none;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .nav-link span {
+    display: none;
+  }
+
+  .parent-menu span {
+    display: none;
+  }
+
+  .toggle-icon {
+    display: none;
+  }
+
+  .child-menu {
+    display: none;
+  }
+}
+
+/* SCROLLBAR */
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }

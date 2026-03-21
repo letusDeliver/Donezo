@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SIDEBAR_MENU } from '../../core/constants/sidebar-menu';
 import { SidebarMenuItem } from '../../core/models/sidebar-menu.model';
@@ -14,6 +14,7 @@ import { ANGULAR_IMPORTS } from '../../shared/ui/angular-imports';
 })
 export class Sidebar {
   menuItems: SidebarMenuItem[] = SIDEBAR_MENU;
+  @Input() collapsed: boolean = false;
 
   constructor(private router: Router) {}
 

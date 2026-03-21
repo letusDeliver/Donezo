@@ -1,4 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { TicketService } from '../../services/ticket.service';
 import { Ticket } from '../../models/ticket.model';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
@@ -7,6 +11,7 @@ import { KanbanColumn } from '../../components/kanban-column/kanban-column';
 import { Subject, takeUntil, debounceTime } from 'rxjs';
 import { TicketFilter } from '../../models/ticket-filter.model';
 import { TicketFilters } from '../../components/ticket-filters/ticket-filters';
+import { ScrollService } from '../../../../core/services/scroll.service';
 
 @Component({
   standalone: true,
@@ -44,16 +49,28 @@ export class KanbanBoard implements OnInit, OnDestroy {
     assignee: '',
   };
 
-  constructor(private ticketService: TicketService) {}
+  constructor(
+    private ticketService: TicketService,
+    private scrollService: ScrollService
+  ) {}
 
   ngOnInit() {
     this.initializeColumns();
 
-    // 🔥 Debounce filter changes (smooth UX)
-    this.filterSubject.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe((filters) => {
-      this.filters = filters;
-      this.resetAndReload();
-    });
+    /* 🔥 FILTER HANDLING */
+    this.filterSubject
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((filters) => {
+        this.filters = filters;
+        this.resetAndReload();
+      });
+
+    /* 🔥 MAIN SCROLL LISTENER (CORRECT WAY) */
+    this.scrollService.scroll$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pos) => {
+        this.handleScroll(pos);
+      });
   }
 
   ngOnDestroy() {
@@ -61,7 +78,7 @@ export class KanbanBoard implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /* 🔥 Initialize all columns */
+  /* 🔥 INITIAL LOAD */
   initializeColumns() {
     this.statuses.forEach((col) => {
       this.columnsData[col.key] = this.getInitialColumnState();
@@ -69,7 +86,6 @@ export class KanbanBoard implements OnInit, OnDestroy {
     });
   }
 
-  /* 🔁 Reset columns */
   resetAndReload() {
     this.statuses.forEach((col) => {
       this.columnsData[col.key] = this.getInitialColumnState();
@@ -77,7 +93,6 @@ export class KanbanBoard implements OnInit, OnDestroy {
     });
   }
 
-  /* 🧱 Initial state */
   getInitialColumnState() {
     return {
       data: [],
@@ -87,7 +102,7 @@ export class KanbanBoard implements OnInit, OnDestroy {
     };
   }
 
-  /* 🔥 Load tickets per column */
+  /* 🔥 API CALL */
   loadTickets(status: string) {
     const col = this.columnsData[status];
 
@@ -111,8 +126,37 @@ export class KanbanBoard implements OnInit, OnDestroy {
       });
   }
 
-  /* 🔥 Handle filters (debounced) */
   applyFilters(filters: TicketFilter) {
     this.filterSubject.next(filters);
   }
+
+  /* 🔥 SCROLL LOGIC (FINAL FIX) */
+  handleScroll(pos: {
+    scrollTop: number;
+    clientHeight: number;
+    scrollHeight: number;
+  }) {
+    const threshold = 150;
+
+    if (pos.scrollTop + pos.clientHeight >= pos.scrollHeight - threshold) {
+      console.log('🔥 vertical bottom reached');
+
+      this.statuses.forEach((col) => {
+        this.loadTickets(col.key);
+      });
+    }
+  }
+  ngAfterViewInit() {
+  setTimeout(() => {
+    const el = document.querySelector('.kanban-board');
+
+    if (!el) return;
+
+    el.scrollTo({ left: 80, behavior: 'smooth' });
+
+    setTimeout(() => {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    }, 600);
+  }, 500);
+}
 }

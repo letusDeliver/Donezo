@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { TicketFilter } from '../../models/ticket-filter.model';
-import { Assignees, Priorities, Types } from '../../models/dropdowns.model';
 
 @Component({
   standalone: true,
@@ -45,7 +44,19 @@ export class TicketFilters {
     { name: 'D', code: 'D' },
   ];
 
-  // 🔥 Trigger on dropdown change
+  /* 🔍 Search */
+  onSearchChange() {
+    this.filters.search = this.filters.search?.trim() || '';
+    this.updateChips();
+    this.emitFilters();
+  }
+
+  clearSearch() {
+    this.filters.search = '';
+    this.onSearchChange();
+  }
+
+  /* 🎯 Dropdowns */
   onSelectChange() {
     this.filters.priority = this.selectedPriority?.code || '';
     this.filters.type = this.selectedType?.code || '';
@@ -55,14 +66,7 @@ export class TicketFilters {
     this.emitFilters();
   }
 
-  // 🔍 Search change
-  onFilterChange() {
-    this.filters.search = this.filters.search?.trim() || '';
-    this.updateChips();
-    this.emitFilters();
-  }
-
-  // 🧠 Build chips
+  /* 🧠 Chips */
   updateChips() {
     this.activeFilters = [];
 
@@ -94,17 +98,19 @@ export class TicketFilters {
       });
     }
   }
-  // ❌ Remove single chip
+
+  /* ❌ Remove single */
   removeFilter(key: string) {
     if (key === 'search') this.filters.search = '';
     if (key === 'priority') this.selectedPriority = undefined;
     if (key === 'type') this.selectedType = undefined;
     if (key === 'assignee') this.selectedAssignee = undefined;
 
-    this.onSelectChange(); // ensures sync + chips update
+    this.onSelectChange();
+    this.onSearchChange();
   }
 
-  // 🧹 Clear all
+  /* 🧹 Clear all */
   clearAll() {
     this.filters = {
       search: '',
@@ -122,7 +128,7 @@ export class TicketFilters {
     this.emitFilters();
   }
 
-  // 📡 Emit to parent
+  /* 📡 Emit */
   emitFilters() {
     this.filtersChange.emit(this.filters);
   }

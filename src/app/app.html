@@ -1,20 +1,37 @@
 <div class="app-shell">
   <div class="app-container">
-    <!-- Fixed Header -->
-    <app-header (toggleSidebar)="sidebarOpen = !sidebarOpen"> </app-header>
-
     <div class="layout-body">
       <!-- Sidebar -->
-      <aside class="sidebar-wrapper" [class.open]="sidebarOpen">
-        <app-sidebar></app-sidebar>
+      <aside
+        class="sidebar-wrapper"
+        [class.open]="sidebarOpen"
+        [class.collapsed]="!isMobile && sidebarCollapsed"
+        [class.hovered]="isHovering"
+        (mouseenter)="onSidebarHover(true)"
+        (mouseleave)="onSidebarHover(false)"
+        (touchstart)="onTouchStart($event)"
+        (touchend)="onTouchEnd($event)"
+      >
+        <app-sidebar [collapsed]="!isMobile && sidebarCollapsed && !isHovering"></app-sidebar>
       </aside>
 
-      <!-- Main content -->
-      <main class="main-wrapper">
-        <div class="content-area p-4">
-          <router-outlet></router-outlet>
-        </div>
-      </main>
+      <!-- RIGHT SIDE -->
+      <div class="main-area">
+        <app-header
+          [collapsed]="sidebarCollapsed"
+          (toggleSidebar)="toggleSidebar()"
+          (toggleCollapse)="toggleCollapse()"
+        ></app-header>
+
+        <main class="content-area" (scroll)="onMainScroll($event)">
+          <div class="content-wrapper">
+            <router-outlet></router-outlet>
+          </div>
+        </main>
+      </div>
+
+      <!-- Backdrop -->
+      <div class="sidebar-backdrop" *ngIf="sidebarOpen" (click)="closeSidebar()"></div>
     </div>
   </div>
 </div>

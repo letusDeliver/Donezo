@@ -1,22 +1,37 @@
 <div class="kanban-column">
 
+  <!-- 🔥 Header -->
   <div class="column-header">
-    <h6>{{ title }}</h6>
-    <span class="count">{{ tickets.length }}</span>
-  </div>
 
-  <div class="column-body" (scroll)="onScroll($event)">
+    <!-- Left -->
+    <div class="header-left">
+      <span
+        class="status-dot"
+        [ngClass]="status"
+        aria-hidden="true"
+      ></span>
 
-    <app-ticket-card
-      *ngFor="let ticket of tickets"
-      [ticket]="ticket">
-    </app-ticket-card>
-
-    <!-- 🔥 Loading indicator -->
-    <div *ngIf="loading" style="text-align:center; padding:10px;">
-      Loading...
+      <h6>{{ title }}</h6>
     </div>
 
+    <!-- Right -->
+    <div class="header-right">
+      <span class="count">{{ tickets.length }}</span>
+    </div>
+
+  </div>
+
+  <!-- Body -->
+  <div class="column-body">
+    <app-ticket-card
+      *ngFor="let ticket of tickets; trackBy: trackById"
+      [ticket]="ticket"
+    ></app-ticket-card>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading">
+      Loading...
+    </div>
   </div>
 
 </div>

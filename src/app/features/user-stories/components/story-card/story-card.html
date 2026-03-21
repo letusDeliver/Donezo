@@ -1,0 +1,30 @@
+<div class="card">
+  <div class="card-header">
+    <span class="id">US-{{ story.id }}</span>
+
+    <span class="status" [ngClass]="story.status.toLowerCase().replace(' ', '')">
+      {{ story.status }}
+    </span>
+  </div>
+
+  <h3>{{ story.title }}</h3>
+
+  <p>{{ story.description }}</p>
+
+  <div class="card-footer">
+    <div class="card-footer-left">
+      <span class="badge" [ngClass]="getPriorityClass(story.priority)">
+        {{ story.priority }}
+      </span>
+
+      <span class="project">{{ story.project }}</span>
+    </div>
+
+    <span class="avatar">{{ story.assignee }}</span>
+  </div>
+
+  <div class="card-actions">
+    <button pButton icon="pi pi-pencil" text></button>
+    <button pButton icon="pi pi-eye" text></button>
+  </div>
+</div>

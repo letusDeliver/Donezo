@@ -1,1 +1,19 @@
-<p>user-stories works!</p>
+<div class="page-container">
+  <!-- Header -->
+  <div class="header">
+    <h2>User Stories ✨</h2>
+  </div>
+
+  <!-- Scroll Container -->
+  <div class="stories-scroll">
+    <div class="stories-list">
+      <app-story-card
+        *ngFor="let story of stories; trackBy: trackById"
+        [story]="story"
+      ></app-story-card>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" *ngIf="loading">Loading more...</div>
+  </div>
+</div>

@@ -1,13 +1,17 @@
-<aside class="sidebar" aria-label="Application sidebar">
-  <!-- MAIN NAVIGATION -->
+<aside class="sidebar" aria-label="Application sidebar" [class.collapsed]="collapsed">
+  <!-- BRANDING -->
+  <div class="sidebar-brand" [attr.title]="collapsed ? 'Donezo' : null">
+    <i class="pi pi-check-circle text-success"></i>
+    <span *ngIf="!collapsed">Donezo</span>
+  </div>
 
+  <!-- MAIN NAVIGATION -->
   <nav class="sidebar-nav" aria-labelledby="main-nav-title">
-    <p id="main-nav-title" class="sidebar-section-title">Menu</p>
+    <p *ngIf="!collapsed" id="main-nav-title" class="sidebar-section-title">Menu</p>
 
     <ul class="nav flex-column" role="menu">
       <li class="nav-item mb-2" *ngFor="let item of menuItems">
         <!-- SIMPLE LINK -->
-
         <a
           *ngIf="!item.children"
           [routerLink]="item.route"
@@ -15,13 +19,13 @@
           [routerLinkActiveOptions]="{ exact: true }"
           class="nav-link"
           role="menuitem"
+          [attr.title]="collapsed ? item.label : null"
         >
-          <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
-          <span>{{ item.label }}</span>
+          <i *ngIf="item.icon" [class]="item.icon"></i>
+          <span *ngIf="!collapsed">{{ item.label }}</span>
         </a>
 
         <!-- PARENT MENU -->
-
         <div
           *ngIf="item.children"
           class="parent-container"
@@ -29,29 +33,27 @@
         >
           <button
             class="nav-link parent-menu"
-            (click)="toggleMenu(item)"
-            (keydown.enter)="toggleMenu(item)"
-            (keydown.space)="toggleMenu(item)"
-            [attr.aria-expanded]="item.expanded"
-            [attr.aria-controls]="item.label + '-submenu'"
+            (click)="!collapsed && toggleMenu(item)"
+            (keydown.enter)="!collapsed && toggleMenu(item)"
+            (keydown.space)="!collapsed && toggleMenu(item)"
+            [attr.title]="collapsed ? item.label : null"
           >
-            <i *ngIf="item.icon" [class]="item.icon" aria-hidden="true"></i>
+            <i *ngIf="item.icon" [class]="item.icon"></i>
 
-            <span>{{ item.label }}</span>
+            <span *ngIf="!collapsed">{{ item.label }}</span>
 
             <i
+              *ngIf="!collapsed"
               class="pi toggle-icon"
               [ngClass]="item.expanded ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
             ></i>
           </button>
 
           <!-- CHILD MENU -->
-
           <ul
+            *ngIf="!collapsed"
             class="nav flex-column child-menu"
             [class.expanded]="item.expanded"
-            [id]="item.label + '-submenu'"
-            role="menu"
           >
             <li *ngFor="let child of item.children">
               <a
@@ -71,22 +73,33 @@
   </nav>
 
   <!-- GENERAL NAVIGATION -->
-
   <nav class="sidebar-bottom" aria-labelledby="general-nav-title">
-    <p id="general-nav-title" class="sidebar-section-title">General</p>
+    <p *ngIf="!collapsed" id="general-nav-title" class="sidebar-section-title">General</p>
 
     <ul class="nav flex-column" role="menu">
       <li class="nav-item">
-        <a routerLink="/settings" routerLinkActive="active" class="nav-link" role="menuitem">
-          <i class="pi pi-cog" aria-hidden="true"></i>
-          <span>Settings</span>
+        <a
+          routerLink="/settings"
+          routerLinkActive="active"
+          class="nav-link"
+          role="menuitem"
+          [attr.title]="collapsed ? 'Settings' : null"
+        >
+          <i class="pi pi-cog"></i>
+          <span *ngIf="!collapsed">Settings</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a routerLink="/help" routerLinkActive="active" class="nav-link" role="menuitem">
-          <i class="pi pi-question-circle" aria-hidden="true"></i>
-          <span>Help</span>
+        <a
+          routerLink="/help"
+          routerLinkActive="active"
+          class="nav-link"
+          role="menuitem"
+          [attr.title]="collapsed ? 'Help' : null"
+        >
+          <i class="pi pi-question-circle"></i>
+          <span *ngIf="!collapsed">Help</span>
         </a>
       </li>
     </ul>

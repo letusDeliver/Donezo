@@ -49,6 +49,20 @@ export class TicketService {
       priority: 'low',
       assignee: 'K',
     },
+    {
+      id: 'TASK-102',
+      title: 'Design system planning',
+      status: 'backlog',
+      priority: 'low',
+      assignee: 'K',
+    },
+    {
+      id: 'TASK-102',
+      title: 'Design system planning',
+      status: 'backlog',
+      priority: 'low',
+      assignee: 'K',
+    },
 
     // TODO
     { id: 'BUG-103', title: 'Fix login bug', status: 'todo', priority: 'high', assignee: 'K' },

@@ -1,47 +1,56 @@
 <header class="header">
-
+  <!-- LEFT -->
   <div class="header-left">
-
+    <!-- MENU / COLLAPSE BUTTON -->
     <button
-      class="menu-btn"
-      aria-label="Toggle sidebar"
-      (click)="toggleSidebar.emit()">
-
-      <i class="pi pi-bars"></i>
-
+      class="icon-btn"
+      (click)="onMenuClick()"
+      [attr.aria-label]="isMobile ? 'Open menu' : collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.title]="isMobile ? 'Menu' : collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <i
+        class="pi collapse-icon"
+        [ngClass]="{
+          'pi-bars': isMobile,
+          'pi-angle-double-left': !collapsed && !isMobile,
+          'pi-angle-double-right': collapsed && !isMobile,
+        }"
+      ></i>
     </button>
 
-    <div class="app-name">
-      <i class="pi pi-check-circle text-success"></i>
-      <span>Donezo</span>
-    </div>
+    <!-- PAGE TITLE (Jira style) -->
+    <div class="page-title">
+      <span class="module">{{ module }}</span>
 
+      <span class="divider" *ngIf="subModule">/</span>
+
+      <span class="sub-module" *ngIf="subModule">
+        {{ subModule }}
+      </span>
+    </div>
   </div>
 
+  <!-- CENTER SEARCH -->
   <div class="search-box">
-
     <i class="pi pi-search"></i>
 
-    <input
-      type="text"
-      placeholder="Search task"
-      class="form-control"
-    />
-
+    <input type="text" placeholder="Search anything..." class="form-control" />
   </div>
 
+  <!-- RIGHT ACTIONS -->
   <div class="header-actions">
-
-    <!-- <button class="icon-btn">
-      <i class="pi pi-envelope"></i>
+    <!-- Future ready (optional buttons) -->
+    <!--
+    <button class="icon-btn">
+      <i class="pi pi-bell"></i>
     </button>
 
     <button class="icon-btn">
-      <i class="pi pi-bell"></i>
-    </button> -->
+      <i class="pi pi-cog"></i>
+    </button>
+    -->
 
+    <!-- Avatar -->
     <p-avatar label="KM" shape="circle"></p-avatar>
-
   </div>
-
 </header>

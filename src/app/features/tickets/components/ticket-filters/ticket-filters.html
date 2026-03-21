@@ -1,95 +1,71 @@
 <div class="filters-container">
-  <div class="filters-row">
-    <!-- 🔍 Search -->
-    <div class="filter-item search">
-      <p-inputgroup>
-        <input
-          pInputText
-          placeholder="Keyword"
-          [(ngModel)]="filters.search"
-          (input)="onFilterChange()"
-          aria-label="Search tickets"
-        />
+  <!-- Toolbar -->
+  <div class="filters-toolbar">
+    <!-- Search -->
+    <div class="search-box">
+      <i class="pi pi-search"></i>
 
-        <p-inputgroup-addon>
-          <p-button
-            icon="pi pi-search"
-            severity="secondary"
-            variant="text"
-            aria-label="Search"
-          />
-        </p-inputgroup-addon>
-      </p-inputgroup>
+      <input
+        pInputText
+        placeholder="Search tickets..."
+        [(ngModel)]="filters.search"
+        (input)="onSearchChange()"
+        aria-label="Search tickets"
+      />
+
+      <button
+        *ngIf="filters.search"
+        class="clear-icon"
+        (click)="clearSearch()"
+        aria-label="Clear search"
+      >
+        ✕
+      </button>
     </div>
 
-    <!-- 🚩 Priority -->
-    <div class="filter-item">
+    <!-- Filters -->
+    <div class="filters-group">
       <p-select
+        class="filter-dropdown"
         [options]="priorities"
         [(ngModel)]="selectedPriority"
         optionLabel="name"
         placeholder="Priority"
         appendTo="body"
         (onChange)="onSelectChange()"
-        aria-label="Filter by priority"
       />
-    </div>
 
-    <!-- 🐞 Type -->
-    <div class="filter-item">
       <p-select
+        class="filter-dropdown"
         [options]="types"
         [(ngModel)]="selectedType"
         optionLabel="name"
         placeholder="Type"
         appendTo="body"
         (onChange)="onSelectChange()"
-        aria-label="Filter by type"
       />
-    </div>
 
-    <!-- 👤 Assignee -->
-    <div class="filter-item">
       <p-select
+        class="filter-dropdown"
         [options]="assignees"
         [(ngModel)]="selectedAssignee"
         optionLabel="name"
         placeholder="Assignee"
         appendTo="body"
         (onChange)="onSelectChange()"
-        aria-label="Filter by assignee"
       />
     </div>
 
-    <!-- 🧹 Clear -->
-    <div class="filter-item clear-btn">
-      <button
-        type="button"
-        class="clear-btn-custom"
-        (click)="clearAll()"
-        aria-label="Clear all filters"
-      >
-        Clear All
-      </button>
-    </div>
+    <!-- Clear -->
+    <button *ngIf="activeFilters.length" class="clear-btn" (click)="clearAll()">Clear</button>
   </div>
 
-  <!-- 🏷️ Chips -->
-  <div class="chips" *ngIf="activeFilters.length" role="list">
-    <span
-      class="chip"
-      *ngFor="let filter of activeFilters"
-      role="listitem"
-    >
+  <!-- Chips -->
+  <div class="chips" *ngIf="activeFilters.length">
+    <span class="chip" *ngFor="let filter of activeFilters">
       {{ filter.label }}
 
-      <button
-        type="button"
-        (click)="removeFilter(filter.key)"
-        aria-label="Remove {{ filter.label }}"
-      >
-        ✕
-      </button>
+      <button (click)="removeFilter(filter.key)" aria-label="Remove filter">✕</button>
     </span>
   </div>
 </div>

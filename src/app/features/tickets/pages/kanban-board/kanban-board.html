@@ -1,23 +1,22 @@
 <div class="kanban-wrapper">
-
-  <!-- Sticky Filters -->
+  <!-- Filters (Sticky) -->
   <div class="filters-bar">
     <app-ticket-filters (filtersChange)="applyFilters($event)"></app-ticket-filters>
   </div>
 
+  <!-- Scroll hint (RIGHT FADE) -->
+  <div class="scroll-hint"></div>
+
   <!-- Board -->
-  <div class="kanban-board">
+  <div class="kanban-board" role="region" aria-label="Kanban Board">
     <div class="kanban-column-wrapper" *ngFor="let col of statuses">
       <app-kanban-column
-        class="kanban-column"
         [title]="col.label"
         [status]="col.key"
         [tickets]="columnsData[col.key].data"
         [loading]="columnsData[col.key].loading"
-        [loadMore]="loadTickets.bind(this)"
       >
       </app-kanban-column>
     </div>
   </div>
-
 </div>

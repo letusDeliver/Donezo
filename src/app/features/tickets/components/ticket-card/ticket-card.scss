@@ -1,73 +1,88 @@
 .ticket-card {
   background: #ffffff;
-  padding: 12px;
   border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
 
   cursor: pointer;
+  transition: all 0.2s ease;
 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  /* ✨ subtle shadow */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
-  flex-shrink: 0; // ✅ prevents weird compression
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+  }
+
+  &:focus {
+    outline: 2px solid #6366f1;
+  }
 }
 
-/* Hover */
-
-.ticket-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+/* 🆔 Ticket ID */
+.ticket-id {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
 }
 
-/* Focus */
-
-.ticket-card:focus-visible {
-  outline: 2px solid #198754;
-  outline-offset: 2px;
-}
-
-/* Title */
-
+/* 📝 Title */
 .ticket-title {
+  font-size: 14px;
   font-weight: 500;
-  margin: 6px 0;
+  color: #111827;
+  line-height: 1.4;
 }
 
-/* Footer */
-
+/* 🔻 Footer */
 .ticket-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Priority */
-
+/* 🚩 Priority */
 .priority {
-  padding: 4px 10px;
-  border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
   text-transform: capitalize;
-  color: white;
+
+  &.high {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  &.medium {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  &.low {
+    background: #dcfce7;
+    color: #16a34a;
+  }
 }
 
-.priority.high {
-  background: #dc3545;
-}
-
-.priority.medium {
-  background: #fd7e14;
-}
-
-.priority.low {
-  background: #198754;
-}
-
-/* Avatar */
-
+/* 👤 Avatar */
 .avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #6366f1;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: 12px;
   font-weight: 600;
-  color: #555;
 }

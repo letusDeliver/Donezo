@@ -5,6 +5,22 @@
 @use './styles/layout';
 @use './styles/primeng-overrides';
 
+/* GLOBAL RESET */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Box-sizing fix (VERY IMPORTANT) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* Base app styles */
 body {
   background: #f3f4f6;
