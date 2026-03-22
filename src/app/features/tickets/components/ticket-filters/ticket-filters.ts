@@ -44,7 +44,7 @@ export class TicketFilters {
     { name: 'D', code: 'D' },
   ];
 
-  /* 🔍 Search */
+  /* Search */
   onSearchChange() {
     this.filters.search = this.filters.search?.trim() || '';
     this.updateChips();
@@ -56,7 +56,7 @@ export class TicketFilters {
     this.onSearchChange();
   }
 
-  /* 🎯 Dropdowns */
+  /* Dropdowns */
   onSelectChange() {
     this.filters.priority = this.selectedPriority?.code || '';
     this.filters.type = this.selectedType?.code || '';
@@ -66,7 +66,7 @@ export class TicketFilters {
     this.emitFilters();
   }
 
-  /* 🧠 Chips */
+  /* Chips */
   updateChips() {
     this.activeFilters = [];
 
@@ -99,7 +99,7 @@ export class TicketFilters {
     }
   }
 
-  /* ❌ Remove single */
+  /* Remove single */
   removeFilter(key: string) {
     if (key === 'search') this.filters.search = '';
     if (key === 'priority') this.selectedPriority = undefined;
@@ -110,7 +110,7 @@ export class TicketFilters {
     this.onSearchChange();
   }
 
-  /* 🧹 Clear all */
+  /* Clear all */
   clearAll() {
     this.filters = {
       search: '',
@@ -128,7 +128,7 @@ export class TicketFilters {
     this.emitFilters();
   }
 
-  /* 📡 Emit */
+  /* Emit */
   emitFilters() {
     this.filtersChange.emit(this.filters);
   }

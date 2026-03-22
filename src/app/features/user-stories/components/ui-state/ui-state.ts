@@ -4,12 +4,12 @@ import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 
 @Component({
   standalone: true,
-  selector: 'app-story-card',
+  selector: 'app-ui-state',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
-  templateUrl: './story-card.html',
-  styleUrl: './story-card.scss',
+  templateUrl: './ui-state.html',
+  styleUrl: './ui-state.scss',
 })
-export class StoryCard {
-  @Input() story: any;
-
+export class UiState {
+  @Input() loading = false;
+  @Input() message = 'No data';
 }

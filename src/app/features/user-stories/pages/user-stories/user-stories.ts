@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { StoryService } from '../../services/story.service';
-import { StoryCard } from '../../components/story-card/story-card';
+import { StoryView } from '../../components/story-view/story-view';
 
 @Component({
   standalone: true,
   selector: 'app-user-stories',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, StoryCard],
+  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, StoryView],
   templateUrl: './user-stories.html',
   styleUrl: './user-stories.scss',
 })
@@ -15,13 +15,18 @@ export class UserStories implements OnInit {
   stories: any[] = [];
   loading = false;
 
+  view: 'list' | 'card' = 'list';
+
   constructor(private storyService: StoryService) {}
 
   ngOnInit() {
     this.loadStories();
   }
 
-  /* Initial Load */
+  setView(mode: 'list' | 'card') {
+    this.view = mode;
+  }
+
   loadStories() {
     this.loading = true;
 
@@ -30,22 +35,10 @@ export class UserStories implements OnInit {
         this.stories = res;
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
-      },
+      error: () => (this.loading = false),
     });
   }
 
-  /* Lazy load for virtual scroll */
-  onLazyLoad(event: any) {
-    // event.first = start index
-    // event.rows = number of items requested
-
-    // Optional: you can optimize using event values
-    this.loadMore();
-  }
-
-  /* Load More Data */
   loadMore() {
     if (this.loading) return;
 
@@ -56,12 +49,7 @@ export class UserStories implements OnInit {
         this.stories = [...this.stories, ...res];
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
-      },
+      error: () => (this.loading = false),
     });
-  }
-  trackById(index: number, item: any) {
-    return item.id;
   }
 }

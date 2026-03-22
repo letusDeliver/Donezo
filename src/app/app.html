@@ -14,7 +14,6 @@
       >
         <app-sidebar [collapsed]="!isMobile && sidebarCollapsed && !isHovering"></app-sidebar>
       </aside>
-
       <!-- RIGHT SIDE -->
       <div class="main-area">
         <app-header
@@ -22,14 +21,10 @@
           (toggleSidebar)="toggleSidebar()"
           (toggleCollapse)="toggleCollapse()"
         ></app-header>
-
         <main class="content-area" (scroll)="onMainScroll($event)">
-          <div class="content-wrapper">
-            <router-outlet></router-outlet>
-          </div>
+          <div class="content-wrapper"><router-outlet></router-outlet></div>
         </main>
       </div>
-
       <!-- Backdrop -->
       <div class="sidebar-backdrop" *ngIf="sidebarOpen" (click)="closeSidebar()"></div>
     </div>

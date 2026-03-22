@@ -1,19 +1,29 @@
-<div class="page-container">
+<div class="page">
   <!-- Header -->
-  <div class="header">
-    <h2>User Stories ✨</h2>
-  </div>
+  <div class="topbar">
 
-  <!-- Scroll Container -->
-  <div class="stories-scroll">
-    <div class="stories-list">
-      <app-story-card
-        *ngFor="let story of stories; trackBy: trackById"
-        [story]="story"
-      ></app-story-card>
+    <div class="view-switch">
+      <button
+        pButton
+        icon="pi pi-list"
+        [class.active]="view === 'list'"
+        (click)="setView('list')"
+      ></button>
+
+      <button
+        pButton
+        icon="pi pi-th-large"
+        [class.active]="view === 'card'"
+        (click)="setView('card')"
+      ></button>
     </div>
-
-    <!-- Loader -->
-    <div class="loader" *ngIf="loading">Loading more...</div>
   </div>
+
+  <!-- Main View -->
+  <app-story-view
+    [data]="stories"
+    [loading]="loading"
+    [view]="view"
+    [loadMore]="loadMore.bind(this)"
+  ></app-story-view>
 </div>

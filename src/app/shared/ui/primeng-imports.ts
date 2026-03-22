@@ -9,6 +9,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectModule } from 'primeng/select';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { SkeletonModule } from 'primeng/skeleton';
 
 export const PRIMENG_IMPORTS = [
   ButtonModule,
@@ -21,5 +22,6 @@ export const PRIMENG_IMPORTS = [
   ProgressBarModule,
   SelectModule,
   InputGroupModule,
-  InputGroupAddonModule
+  InputGroupAddonModule,
+  SkeletonModule
 ];
