@@ -7,7 +7,7 @@
   position: relative;
 }
 
-/* 🔥 STICKY FILTERS */
+/* STICKY FILTERS */
 .filters-bar {
   position: sticky;
   top: 0;
@@ -20,25 +20,33 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* 🔥 SCROLL HINT (gradient fade) */
+/* IMPROVED SCROLL HINT */
 .scroll-hint {
   position: absolute;
   top: 70px;
   right: 0;
-  width: 40px;
+  width: 60px;
   height: calc(100% - 70px);
 
   pointer-events: none;
-  z-index: 10;
+  z-index: 20;
 
-  background: linear-gradient(
-    to left,
-    rgba(244, 245, 247, 1),
-    rgba(244, 245, 247, 0)
-  );
+  background: linear-gradient(to left, rgba(244, 245, 247, 1), rgba(244, 245, 247, 0));
+
+  /* subtle animation */
+  animation: hintFade 1.5s ease-in-out infinite alternate;
 }
 
-/* Board */
+@keyframes hintFade {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* BOARD */
 .kanban-board {
   flex: 1;
   min-height: 0;
@@ -52,21 +60,24 @@
   overflow-y: hidden;
 
   scroll-behavior: smooth;
+
+  /* makes scrollbar space reserved */
+  scrollbar-gutter: stable both-edges;
 }
 
-/* Hide scrollbar but keep scroll */
+/* SCROLLBAR (VISIBLE + CLEAN) */
 .kanban-board::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
 
 .kanban-board::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.3);
+  background: rgba(100, 116, 139, 0.5);
   border-radius: 10px;
 }
 
-/* Column */
+/* PARTIAL COLUMN VISIBILITY (IMPORTANT) */
 .kanban-column-wrapper {
-  flex: 0 0 300px;
+  flex: 0 0 280px; /* reduced from 300 */
   display: flex;
   min-height: 0;
 }
@@ -77,14 +88,20 @@ app-kanban-column {
   flex: 1;
   min-height: 0;
 }
+
+/* Hover polish */
 .kanban-column {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
   }
 }
+
+/* MOBILE */
 @media (max-width: 768px) {
   .kanban-column-wrapper {
     flex: 0 0 85%;

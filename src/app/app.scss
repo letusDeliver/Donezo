@@ -3,80 +3,107 @@
   height: 100dvh;
   width: 100%;
   overflow: hidden;
-} /* Main Container */
+}
+
+/* Main Container */
 .app-container {
   height: 100%;
   width: 100%;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-} /* Layout Body */
+}
+
+/* Layout Body */
 .layout-body {
   display: flex;
   flex: 1;
-  min-height: 0;
-  overflow: hidden;
-} /* Sidebar */
+  min-height: 0; /* IMPORTANT */
+}
+
+/* Sidebar */
 .sidebar-wrapper {
   width: 260px;
   flex-shrink: 0;
   height: 100%;
+
   background: #fafafa;
   border-right: 1px solid #eee;
+
   overflow-y: auto;
+
   transition:
     width 0.25s ease,
     transform 0.25s ease;
+
   will-change: width;
-  z-index: 1001; /* Collapsed */
+  z-index: 1001;
+
   &.collapsed {
     width: 72px;
-  } /* Hover Expand (FIXED SMOOTHLY) */
+  }
+
   &.collapsed.hovered {
     width: 260px;
   }
-} /* Sidebar Scrollbar */
+}
+
+/* Sidebar Scrollbar */
 .sidebar-wrapper::-webkit-scrollbar {
   width: 6px;
 }
 .sidebar-wrapper::-webkit-scrollbar-thumb {
   background: #d6d6d6;
   border-radius: 10px;
-} /* RIGHT SIDE */
+}
+
+/* RIGHT SIDE */
 .main-area {
   flex: 1;
   display: flex;
   flex-direction: column;
+
   min-width: 0;
   min-height: 0;
-  overflow: hidden; /* Smooth layout shift */
+
+  /* REMOVED overflow: hidden */
   transition: all 0.25s ease;
-} /* Header */
+}
+
+/* Header */
 .header {
   flex-shrink: 0;
-} /* Content Wrapper */
-.content-wrapper {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-} /* Main Scroll Area */
+}
+
+/* Main Scroll Area */
 .content-area {
   flex: 1;
+
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
+
   overflow-y: auto;
+  overflow-x: hidden;
+
+  /* FIX: remove flex */
+  display: block;
+
   background: #f8f9fa;
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
-} /* Content Scrollbar */
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 16px;
+
+  /* REMOVED flex + height constraints */
+}
+
+/* Content Scrollbar */
 .content-area::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -84,35 +111,45 @@
 .content-area::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.4);
   border-radius: 10px;
-} /* Backdrop */
+}
+
+/* Backdrop */
 .sidebar-backdrop {
   display: none;
-} /* MOBILE RESPONSIVE */
+}
+
+/* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  /* Sidebar overlay mode */
   .sidebar-wrapper {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
+
     width: 260px;
+
     transform: translateX(-100%);
     transition: transform 0.25s ease;
+
     z-index: 1001;
   }
+
   .sidebar-wrapper.open {
     transform: translateX(0);
-  } /* Disable hover behavior on mobile */
+  }
+
   .sidebar-wrapper.collapsed.hovered {
-    width: 260px; /* no effect actually */
-  } /* Backdrop */
+    width: 260px;
+  }
+
   .sidebar-backdrop {
     display: block;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.3);
     z-index: 1000;
-  } /* Content full width */
+  }
+
   .main-area {
     width: 100%;
   }
