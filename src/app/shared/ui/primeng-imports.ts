@@ -15,6 +15,9 @@ import { InputIconModule } from 'primeng/inputicon';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MessageModule } from 'primeng/message';
 
 export const PRIMENG_IMPORTS = [
   ButtonModule,
@@ -33,6 +36,8 @@ export const PRIMENG_IMPORTS = [
   InputIconModule,
   MultiSelectModule,
   SliderModule,
-  TagModule
-  
+  TagModule,
+  TextareaModule,
+  AutoCompleteModule,
+  MessageModule,
 ];

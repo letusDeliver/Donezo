@@ -1,0 +1,167 @@
+<p-dialog
+  header="User Story"
+  [(visible)]="visible"
+  (onHide)="close()"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '550px' }"
+>
+  <form [formGroup]="form" (ngSubmit)="saveStory()">
+    <div class="p-2">
+      <div class="container-fluid px-0">
+        <div class="row g-3">
+          <!-- Title -->
+          <div class="col-12">
+            <div class="flex flex-col gap-2">
+              <label>Title <span class="text-danger">*</span></label>
+
+              <input
+                pInputText
+                formControlName="title"
+                class="w-100"
+                [invalid]="isInvalid('title')"
+              />
+
+              @if (isInvalid('title')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Title must be at least 3 characters
+                </p-message>
+              }
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <div class="flex flex-col gap-2">
+              <label>Description <span class="text-danger">*</span></label>
+
+              <textarea
+                pInputTextarea
+                formControlName="description"
+                class="w-100"
+                [invalid]="isInvalid('description')"
+              ></textarea>
+
+              @if (isInvalid('description')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Description must be at least 5 characters
+                </p-message>
+              }
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <!-- <div class="col-12">
+            <hr class="my-2" />
+          </div> -->
+
+          <!-- Assignee -->
+          <div class="col-12 col-md-6">
+            <div class="flex flex-col gap-2">
+              <label>Assignee <span class="text-danger">*</span></label>
+
+              <p-autocomplete
+                class="w-100"
+                formControlName="assignee"
+                [suggestions]="filteredAssignees"
+                (completeMethod)="searchAssignee($event)"
+                field="name"
+                optionLabel="name"
+                optionValue="name"
+                [dropdown]="true"
+                appendTo="body"
+                [invalid]="isInvalid('assignee')"
+              ></p-autocomplete>
+
+              @if (isInvalid('assignee')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Assignee is required
+                </p-message>
+              }
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-12 col-md-6">
+            <div class="flex flex-col gap-2">
+              <label>Status <span class="text-danger">*</span></label>
+
+              <p-select
+                class="w-100"
+                formControlName="status"
+                [options]="statusOptions"
+                optionLabel="label"
+                optionValue="value"
+                appendTo="body"
+                [invalid]="isInvalid('status')"
+              ></p-select>
+
+              @if (isInvalid('status')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Status is required
+                </p-message>
+              }
+            </div>
+          </div>
+
+          <!-- Priority -->
+          <div class="col-12 col-md-6">
+            <div class="flex flex-col gap-2">
+              <label>Priority <span class="text-danger">*</span></label>
+
+              <p-select
+                class="w-100"
+                formControlName="priority"
+                [options]="priorityOptions"
+                optionLabel="label"
+                optionValue="value"
+                appendTo="body"
+                [invalid]="isInvalid('priority')"
+              ></p-select>
+
+              @if (isInvalid('priority')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Priority is required
+                </p-message>
+              }
+            </div>
+          </div>
+
+          <!-- Story Points -->
+          <div class="col-12 col-md-6">
+            <div class="flex flex-col gap-2">
+              <label>Story Points <span class="text-danger">*</span></label>
+
+              <input
+                pInputText
+                type="number"
+                formControlName="storyPoints"
+                class="w-100"
+                [invalid]="isInvalid('storyPoints')"
+              />
+
+              @if (isInvalid('storyPoints')) {
+                <p-message severity="error" size="small" variant="simple">
+                  Must be 0 or greater
+                </p-message>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer mt-4 d-flex justify-content-center gap-2">
+      <button type="button" pButton label="Cancel" (click)="close()" severity="danger"></button>
+
+      <button
+        type="submit"
+        pButton
+        label="Save"
+        severity="success"
+        [disabled]="form.invalid"
+      ></button>
+    </div>
+  </form>
+</p-dialog>
