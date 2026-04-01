@@ -10,6 +10,11 @@ import { SelectModule } from 'primeng/select';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { SkeletonModule } from 'primeng/skeleton';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SliderModule } from 'primeng/slider';
+import { TagModule } from 'primeng/tag';
 
 export const PRIMENG_IMPORTS = [
   ButtonModule,
@@ -23,5 +28,11 @@ export const PRIMENG_IMPORTS = [
   SelectModule,
   InputGroupModule,
   InputGroupAddonModule,
-  SkeletonModule
+  SkeletonModule,
+  IconFieldModule,
+  InputIconModule,
+  MultiSelectModule,
+  SliderModule,
+  TagModule
+  
 ];

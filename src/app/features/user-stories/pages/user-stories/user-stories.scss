@@ -1,0 +1,12 @@
+.card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .search_filter_container{
+    display: flex !important;
+    justify-content: space-between !important;
+  }
