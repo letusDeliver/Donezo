@@ -1,12 +1,21 @@
 .card {
-    background: var(--card-bg);
-    border: var(--card-border);
-    padding: 2rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-  }
+  background: var(--card-bg);
+  border: var(--card-border);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
 
-  .search_filter_container{
-    display: flex !important;
-    justify-content: space-between !important;
+.search_filter_container {
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+@media screen and (max-width: 450px) {
+  .search_filter_container {
+    display: block !important;
   }
+  .clear-button {
+    padding-bottom: 1rem;
+  }
+}
