@@ -4,6 +4,7 @@ import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { StoryService } from '../../services/user-story.service';
 import { UserStory } from '../../models/user-story.model';
 import { AddStoryModal } from '../../components/add-story-modal/add-story-modal';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ import { AddStoryModal } from '../../components/add-story-modal/add-story-modal'
 })
 export class UserStories {
   private storyService = inject(StoryService);
+  private router: Router = inject(Router);
 
   stories: UserStory[] = [];
   selectedStory: UserStory | null = null;
@@ -88,5 +90,9 @@ export class UserStories {
     }
 
     this.showDialog = false;
+  }
+
+  createWithAi(){
+    this.router.navigate(['user-stories/create-with-ai']);
   }
 }
