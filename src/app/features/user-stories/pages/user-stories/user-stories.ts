@@ -5,11 +5,12 @@ import { StoryService } from '../../services/user-story.service';
 import { UserStory } from '../../models/user-story.model';
 import { AddStoryModal } from '../../components/add-story-modal/add-story-modal';
 import { Router } from '@angular/router';
+import { StoryDetail } from '../../components/story-detail/story-detail';
 
 @Component({
   standalone: true,
   selector: 'app-user-stories',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, AddStoryModal],
+  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, AddStoryModal, StoryDetail],
   templateUrl: './user-stories.html',
   styleUrl: './user-stories.scss',
 })
@@ -19,9 +20,12 @@ export class UserStories {
 
   stories: UserStory[] = [];
   selectedStory: UserStory | null = null;
-  showDialog = false;
+  show_create_story_modal = false;
   loading = true;
   search = '';
+
+  show_story_details_modal: boolean = false;
+  selected_story_details: UserStory | null = null;
 
   ngOnInit() {
     this.storyService.getUserStories().then((data) => {
@@ -67,17 +71,17 @@ export class UserStories {
       description: '',
       status: 'backlog',
       priority: 'medium',
-      assignee: {name: 'Kunal'},
+      assignee: { name: 'Kunal' },
       storyPoints: 0,
       createdAt: new Date(),
     };
 
-    this.showDialog = true;
+    this.show_create_story_modal = true;
   }
 
   editStory(story: UserStory) {
     this.selectedStory = { ...story };
-    this.showDialog = true;
+    this.show_create_story_modal = true;
   }
 
   handleSave(story: UserStory) {
@@ -89,10 +93,20 @@ export class UserStories {
       this.stories.push(story);
     }
 
-    this.showDialog = false;
+    this.show_create_story_modal = false;
   }
 
-  createWithAi(){
+  createWithAi() {
     this.router.navigate(['user-stories/create-with-ai']);
+  }
+
+  viewStory(event: any) {
+    this.show_story_details_modal = true;
+    this.selected_story_details = event;
+  }
+
+  editStoryFromModal(story: UserStory) {
+    this.show_story_details_modal = false;
+    this.editStory(story);
   }
 }

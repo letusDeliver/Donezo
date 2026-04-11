@@ -6,7 +6,7 @@
     [size]="'small'"
     [rowsPerPageOptions]="[10, 25, 50]"
     [loading]="loading"
-    [paginator]="true"
+    [paginator]="stories.length > 10"
     showGridlines
   >
     <ng-template #caption>
@@ -20,7 +20,13 @@
           </p-iconfield>
         </div>
         <div class="add-button">
-          <p-button label="New" class="pe-2" [outlined]="true" icon="pi pi-plus" (click)="openNew()" />
+          <p-button
+            label="New"
+            class="pe-2"
+            [outlined]="true"
+            icon="pi pi-plus"
+            (click)="openNew()"
+          />
           <p-button label="AI" [outlined]="true" icon="pi pi-plus" (click)="createWithAi()" />
         </div>
       </div>
@@ -57,16 +63,13 @@
           <div class="font-semibold">
             {{ story.title }}
           </div>
-          <small class="text-gray-500">
-            {{ story.description }}
-          </small>
         </td>
 
         <!-- Assignee -->
         <td>
           <div class="flex items-center gap-2">
-            <i class="pi pi-user text-primary"></i>
-            <span>{{ story.assignee }}</span>
+            <i class="pi pi-user text-primary pe-2"></i>
+            <span>{{ story.assignee?.name }}</span>
           </div>
         </td>
 
@@ -97,6 +100,12 @@
           <div class="flex gap-2">
             <button
               pButton
+              icon="pi pi-eye"
+              class="p-button-sm p-button-text p-button-info"
+              (click)="viewStory(story)"
+            ></button>
+            <button
+              pButton
               icon="pi pi-pencil"
               class="p-button-sm p-button-text"
               (click)="editStory(story)"
@@ -121,8 +130,15 @@
 </div>
 
 <app-add-story-modal
-  [visible]="showDialog"
+  [visible]="show_create_story_modal"
   [story]="selectedStory"
-  (visibleChange)="showDialog = $event"
+  (visibleChange)="show_create_story_modal = $event"
   (save)="handleSave($event)"
 ></app-add-story-modal>
+
+<app-story-detail
+  [visible]="show_story_details_modal"
+  [storyDetails]="selected_story_details"
+  (close_story_detail_modal)="show_story_details_modal = false"
+  (edit_story)="editStoryFromModal($event)"
+></app-story-detail>

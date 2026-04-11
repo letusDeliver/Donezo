@@ -18,6 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MessageModule } from 'primeng/message';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+
 
 export const PRIMENG_IMPORTS = [
   ButtonModule,
@@ -40,4 +42,5 @@ export const PRIMENG_IMPORTS = [
   TextareaModule,
   AutoCompleteModule,
   MessageModule,
+  ToggleButtonModule
 ];
