@@ -16,7 +16,7 @@
           *ngIf="!item.children"
           [routerLink]="item.route"
           routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLinkActiveOptions]="{ exact: false }"
           class="nav-link"
           role="menuitem"
           [attr.title]="collapsed ? item.label : null"

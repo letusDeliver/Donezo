@@ -1,18 +1,13 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  HostListener,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { PRIMENG_IMPORTS } from '../../shared/ui/primeng-imports';
 import { ANGULAR_IMPORTS } from '../../shared/ui/angular-imports';
+import { BreadCrumb } from '../../shared/components/bread-crumb/bread-crumb';
 
 @Component({
   selector: 'app-header',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
+  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, BreadCrumb],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -62,6 +57,9 @@ export class Header {
   }
 
   private format(value: string): string {
-    return value.charAt(0).toUpperCase() + value.slice(1);
+    return value
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 }

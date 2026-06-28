@@ -1,0 +1,40 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+
+  &::before {
+    content: '/';
+    margin-right: 4px;
+    color: #adb5bd;
+  }
+
+  &:first-child::before {
+    display: none;
+  }
+
+  a {
+    color: #198754;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &.active span {
+    color: #212529;
+    font-weight: 600;
+  }
+}
