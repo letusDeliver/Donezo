@@ -9,14 +9,16 @@
 
   <!-- Board -->
   <div class="kanban-board" role="region" aria-label="Kanban Board">
-    <div class="kanban-column-wrapper" *ngFor="let col of statuses">
-      <app-kanban-column
-        [title]="col.label"
-        [status]="col.key"
-        [tickets]="columnsData[col.key].data"
-        [loading]="columnsData[col.key].loading"
-      >
-      </app-kanban-column>
-    </div>
+    @for (col of statuses; track col) {
+      <div class="kanban-column-wrapper">
+        <app-kanban-column
+          [title]="col.label"
+          [status]="col.key"
+          [tickets]="columnsData[col.key].data"
+          [loading]="columnsData[col.key].loading"
+          >
+        </app-kanban-column>
+      </div>
+    }
   </div>
 </div>

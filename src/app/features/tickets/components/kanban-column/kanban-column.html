@@ -23,15 +23,18 @@
 
   <!-- Body -->
   <div class="column-body">
-    <app-ticket-card
-      *ngFor="let ticket of tickets; trackBy: trackById"
-      [ticket]="ticket"
-    ></app-ticket-card>
+    @for (ticket of tickets; track trackById($index, ticket)) {
+      <app-ticket-card
+        [ticket]="ticket"
+      ></app-ticket-card>
+    }
 
     <!-- Loading -->
-    <div *ngIf="loading" class="loading">
-      Loading...
-    </div>
+    @if (loading) {
+      <div class="loading">
+        Loading...
+      </div>
+    }
   </div>
 
 </div>

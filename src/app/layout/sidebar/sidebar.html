@@ -2,79 +2,97 @@
   <!-- BRANDING -->
   <div class="sidebar-brand" [attr.title]="collapsed ? 'Donezo' : null">
     <i class="pi pi-check-circle text-success"></i>
-    <span *ngIf="!collapsed">Donezo</span>
+    @if (!collapsed) {
+      <span>Donezo</span>
+    }
   </div>
 
   <!-- MAIN NAVIGATION -->
   <nav class="sidebar-nav" aria-labelledby="main-nav-title">
-    <p *ngIf="!collapsed" id="main-nav-title" class="sidebar-section-title">Menu</p>
+    @if (!collapsed) {
+      <p id="main-nav-title" class="sidebar-section-title">Menu</p>
+    }
 
     <ul class="nav flex-column" role="menu">
-      <li class="nav-item mb-2" *ngFor="let item of menuItems">
-        <!-- SIMPLE LINK -->
-        <a
-          *ngIf="!item.children"
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          class="nav-link"
-          role="menuitem"
-          [attr.title]="collapsed ? item.label : null"
-        >
-          <i *ngIf="item.icon" [class]="item.icon"></i>
-          <span *ngIf="!collapsed">{{ item.label }}</span>
-        </a>
-
-        <!-- PARENT MENU -->
-        <div
-          *ngIf="item.children"
-          class="parent-container"
-          [class.parent-active]="isParentActive(item)"
-        >
-          <button
-            class="nav-link parent-menu"
-            (click)="!collapsed && toggleMenu(item)"
-            (keydown.enter)="!collapsed && toggleMenu(item)"
-            (keydown.space)="!collapsed && toggleMenu(item)"
-            [attr.title]="collapsed ? item.label : null"
-          >
-            <i *ngIf="item.icon" [class]="item.icon"></i>
-
-            <span *ngIf="!collapsed">{{ item.label }}</span>
-
-            <i
-              *ngIf="!collapsed"
-              class="pi toggle-icon"
-              [ngClass]="item.expanded ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
-            ></i>
-          </button>
-
-          <!-- CHILD MENU -->
-          <ul
-            *ngIf="!collapsed"
-            class="nav flex-column child-menu"
-            [class.expanded]="item.expanded"
-          >
-            <li *ngFor="let child of item.children">
-              <a
-                [routerLink]="child.route"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                class="nav-link child-link mt-2"
-                role="menuitem"
+      @for (item of menuItems; track item) {
+        <li class="nav-item mb-2">
+          <!-- SIMPLE LINK -->
+          @if (!item.children) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="nav-link"
+              role="menuitem"
+              [attr.title]="collapsed ? item.label : null"
               >
-                {{ child.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
-      </li>
+              @if (item.icon) {
+                <i [class]="item.icon"></i>
+              }
+              @if (!collapsed) {
+                <span>{{ item.label }}</span>
+              }
+            </a>
+          }
+          <!-- PARENT MENU -->
+          @if (item.children) {
+            <div
+              class="parent-container"
+              [class.parent-active]="isParentActive(item)"
+              >
+              <button
+                class="nav-link parent-menu"
+                (click)="!collapsed && toggleMenu(item)"
+                (keydown.enter)="!collapsed && toggleMenu(item)"
+                (keydown.space)="!collapsed && toggleMenu(item)"
+                [attr.title]="collapsed ? item.label : null"
+                >
+                @if (item.icon) {
+                  <i [class]="item.icon"></i>
+                }
+                @if (!collapsed) {
+                  <span>{{ item.label }}</span>
+                }
+                @if (!collapsed) {
+                  <i
+                    class="pi toggle-icon"
+                    [ngClass]="item.expanded ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
+                  ></i>
+                }
+              </button>
+              <!-- CHILD MENU -->
+              @if (!collapsed) {
+                <ul
+                  class="nav flex-column child-menu"
+                  [class.expanded]="item.expanded"
+                  >
+                  @for (child of item.children; track child) {
+                    <li>
+                      <a
+                        [routerLink]="child.route"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                        class="nav-link child-link mt-2"
+                        role="menuitem"
+                        >
+                        {{ child.label }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </li>
+      }
     </ul>
   </nav>
 
   <!-- GENERAL NAVIGATION -->
   <nav class="sidebar-bottom" aria-labelledby="general-nav-title">
-    <p *ngIf="!collapsed" id="general-nav-title" class="sidebar-section-title">General</p>
+    @if (!collapsed) {
+      <p id="general-nav-title" class="sidebar-section-title">General</p>
+    }
 
     <ul class="nav flex-column" role="menu">
       <li class="nav-item">
@@ -84,9 +102,11 @@
           class="nav-link"
           role="menuitem"
           [attr.title]="collapsed ? 'Settings' : null"
-        >
+          >
           <i class="pi pi-cog"></i>
-          <span *ngIf="!collapsed">Settings</span>
+          @if (!collapsed) {
+            <span>Settings</span>
+          }
         </a>
       </li>
 
@@ -97,9 +117,11 @@
           class="nav-link"
           role="menuitem"
           [attr.title]="collapsed ? 'Help' : null"
-        >
+          >
           <i class="pi pi-question-circle"></i>
-          <span *ngIf="!collapsed">Help</span>
+          @if (!collapsed) {
+            <span>Help</span>
+          }
         </a>
       </li>
     </ul>
