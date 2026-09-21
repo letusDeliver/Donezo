@@ -4,7 +4,6 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Header } from './layout/header/header';
-import { ScrollService } from './core/services/scroll.service';
 import { Viewport } from './core/services/viewport.service';
 
 const COLLAPSE_KEY = 'sidebarCollapsed';
@@ -27,7 +26,6 @@ function readCollapsed(): boolean {
 })
 export class App {
   private readonly router = inject(Router);
-  private readonly scrollService = inject(ScrollService);
 
   protected readonly isMobile = inject(Viewport).isMobile;
 
@@ -87,15 +85,5 @@ export class App {
     const diff = event.changedTouches[0].screenX - this.touchStartX;
     if (diff > SWIPE_THRESHOLD) this.sidebarOpen.set(true);
     if (diff < -SWIPE_THRESHOLD) this.sidebarOpen.set(false);
-  }
-
-  protected onMainScroll(event: Event) {
-    const el = event.target as HTMLElement;
-
-    this.scrollService.scroll$.next({
-      scrollTop: el.scrollTop,
-      clientHeight: el.clientHeight,
-      scrollHeight: el.scrollHeight,
-    });
   }
 }
