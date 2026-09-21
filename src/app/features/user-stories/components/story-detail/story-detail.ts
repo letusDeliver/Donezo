@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { UserStory } from '../../models/user-story.model';
@@ -8,6 +8,7 @@ import { UserStory } from '../../models/user-story.model';
   selector: 'app-story-detail',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
   templateUrl: './story-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './story-detail.scss',
 })
 export class StoryDetail {

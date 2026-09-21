@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { ProjectModel } from '../../models/project.model';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { TableModule } from 'primeng/table';
   selector: 'app-project-list',
   imports: [CommonModule, TableModule],
   templateUrl: './project-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './project-list.scss',
 })
 export class ProjectList {

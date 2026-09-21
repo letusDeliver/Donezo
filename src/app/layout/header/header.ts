@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, Output, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { PRIMENG_IMPORTS } from '../../shared/ui/primeng-imports';
@@ -9,6 +9,7 @@ import { BreadCrumb } from '../../shared/components/bread-crumb/bread-crumb';
   selector: 'app-header',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, BreadCrumb],
   templateUrl: './header.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './header.scss',
 })
 export class Header {

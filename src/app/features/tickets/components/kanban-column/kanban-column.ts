@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { TicketCard } from '../ticket-card/ticket-card';
@@ -9,6 +9,7 @@ import { Ticket } from '../../models/ticket.model';
   selector: 'app-kanban-column',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, TicketCard],
   templateUrl: './kanban-column.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kanban-column.scss',
 })
 export class KanbanColumn {

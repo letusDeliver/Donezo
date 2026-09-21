@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { TicketService } from '../../services/ticket.service';
 import { Ticket } from '../../models/ticket.model';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
@@ -14,6 +14,7 @@ import { ScrollService } from '../../../../core/services/scroll.service';
   selector: 'app-kanban-board',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, KanbanColumn, TicketFilters],
   templateUrl: './kanban-board.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kanban-board.scss',
 })
 export class KanbanBoard implements OnInit, OnDestroy, AfterViewInit {

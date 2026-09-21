@@ -1,4 +1,4 @@
-import { Component, signal, HostListener } from '@angular/core';
+import { Component, signal, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Header } from './layout/header/header';
@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
   selector: 'app-root',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, RouterOutlet, Sidebar, Header],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
 })
 export class App {

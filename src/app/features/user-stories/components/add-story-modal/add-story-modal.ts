@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
@@ -10,6 +10,7 @@ import { UserStory } from '../../models/user-story.model';
   selector: 'app-add-story-modal',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
   templateUrl: './add-story-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-story-modal.scss',
 })
 export class AddStoryModal implements OnChanges {

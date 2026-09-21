@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { TicketFilter } from '../../models/ticket-filter.model';
@@ -8,6 +8,7 @@ import { TicketFilter } from '../../models/ticket-filter.model';
   selector: 'app-ticket-filters',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
   templateUrl: './ticket-filters.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './ticket-filters.scss',
 })
 export class TicketFilters {

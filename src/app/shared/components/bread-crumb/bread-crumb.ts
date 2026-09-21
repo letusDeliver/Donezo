@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../ui/primeng-imports';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
@@ -15,6 +15,7 @@ interface BreadcrumbItem {
   selector: 'app-bread-crumb',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, RouterLink],
   templateUrl: './bread-crumb.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bread-crumb.scss',
 })
 export class BreadCrumb {

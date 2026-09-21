@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
 import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
 import { StoryService } from '../../services/user-story.service';
@@ -12,6 +12,7 @@ import { StoryDetail } from '../../components/story-detail/story-detail';
   selector: 'app-user-stories',
   imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, AddStoryModal, StoryDetail],
   templateUrl: './user-stories.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-stories.scss',
 })
 export class UserStories {
