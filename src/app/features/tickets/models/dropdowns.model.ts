@@ -1,14 +1,4 @@
-export interface Priorities {
-  name: string;
-  code: string;
-}
-
-export interface Types {
-  name: string;
-  code: string;
-}
-
-export interface Assignees {
+export interface SelectOption {
   name: string;
   code: string;
 }

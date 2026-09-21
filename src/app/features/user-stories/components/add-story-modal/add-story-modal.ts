@@ -1,30 +1,44 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
-import { UserStory } from '../../models/user-story.model';
+import { ChangeDetectionStrategy, Component, effect, inject, input, model, output, signal } from '@angular/core';
+import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
+import {
+  Assignee,
+  StoryPriority,
+  StoryStatus,
+  UserStory,
+} from '../../models/user-story.model';
 
 @Component({
-  standalone: true,
   selector: 'app-add-story-modal',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
+  imports: [
+    ReactiveFormsModule,
+    DialogModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    AutoCompleteModule,
+    MessageModule,
+    ButtonModule,
+  ],
   templateUrl: './add-story-modal.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-story-modal.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddStoryModal implements OnChanges {
-  @Input() visible = false;
-  @Input() story: UserStory | null = null;
+export class AddStoryModal {
+  private readonly fb = inject(NonNullableFormBuilder);
 
-  @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() save = new EventEmitter<UserStory>();
+  /** Two-way bindable: `[(visible)]`. */
+  readonly visible = model(false);
+  readonly story = input<UserStory | null>(null);
+  readonly save = output<UserStory>();
 
-  form!: FormGroup;
-  formSubmitted = false;
-
-  // Dropdown Options
-  statusOptions = [
+  protected readonly statusOptions: { label: string; value: StoryStatus }[] = [
     { label: 'Backlog', value: 'backlog' },
     { label: 'In Progress', value: 'in-progress' },
     { label: 'Done', value: 'done' },
@@ -32,13 +46,13 @@ export class AddStoryModal implements OnChanges {
     { label: 'Review', value: 'review' },
   ];
 
-  priorityOptions = [
+  protected readonly priorityOptions: { label: string; value: StoryPriority }[] = [
     { label: 'High', value: 'high' },
     { label: 'Medium', value: 'medium' },
     { label: 'Low', value: 'low' },
   ];
 
-  assigneeOptions = [
+  private readonly assigneeOptions: Assignee[] = [
     { name: 'Kunal' },
     { name: 'Dipika' },
     { name: 'Umang' },
@@ -47,76 +61,58 @@ export class AddStoryModal implements OnChanges {
     { name: 'Kishlay' },
   ];
 
-  filteredAssignees: any[] = [];
+  protected readonly filteredAssignees = signal<Assignee[]>([]);
+  protected readonly formSubmitted = signal(false);
 
-  constructor(private fb: FormBuilder) {
-    this.initForm();
-  }
+  protected readonly form = this.fb.group({
+    title: ['', [Validators.required, Validators.minLength(3)]],
+    description: ['', [Validators.required, Validators.minLength(5)]],
+    assignee: new FormControl<Assignee | string | null>(null, Validators.required),
+    status: this.fb.control<StoryStatus>('backlog', Validators.required),
+    priority: this.fb.control<StoryPriority>('medium', Validators.required),
+    storyPoints: [0, [Validators.required, Validators.min(0)]],
+  });
 
-  // Initialize Form
-  initForm() {
-    this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(5)]],
-      assignee: [null, Validators.required],
-      status: ['backlog', Validators.required],
-      priority: ['medium', Validators.required],
-      storyPoints: [0, [Validators.required, Validators.min(0)]],
+  constructor() {
+    // Patch the form whenever a story is passed in for editing.
+    effect(() => {
+      const story = this.story();
+      if (story) this.form.patchValue(story);
     });
   }
 
-  // Patch data when editing
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['story'] && this.story) {
-      this.form.patchValue(this.story);
-    }
-  }
-
-  // Close modal
-  close() {
-    this.visibleChange.emit(false);
-    this.form.reset(); // optional reset
-  }
-
-  // Save
-  saveStory() {
-    this.formSubmitted = true;
-
-    if (this.form.invalid) {
-      return;
-    }
-
-    const formValue = this.form.value;
-
-    const finalStory: UserStory = {
-      ...formValue,
-      id: this.story?.id || Date.now(),
-      createdAt: this.story?.createdAt || new Date(),
-    };
-
-    this.save.emit(finalStory);
-
+  protected close() {
+    this.visible.set(false);
     this.form.reset();
-    this.formSubmitted = false;
+    this.formSubmitted.set(false);
+  }
+
+  protected saveStory() {
+    this.formSubmitted.set(true);
+    if (this.form.invalid) return;
+
+    const { assignee, ...value } = this.form.getRawValue();
+    const current = this.story();
+
+    this.save.emit({
+      ...value,
+      assignee: typeof assignee === 'string' ? { name: assignee } : assignee!,
+      id: current?.id ?? Date.now(),
+      createdAt: current?.createdAt ?? new Date(),
+    });
+
     this.close();
   }
 
-  // Autocomplete filter
-  searchAssignee(event: any) {
+  protected searchAssignee(event: AutoCompleteCompleteEvent) {
     const query = event.query.toLowerCase();
-
-    this.filteredAssignees = this.assigneeOptions.filter((user) =>
-      user.name.toLowerCase().includes(query),
+    this.filteredAssignees.set(
+      this.assigneeOptions.filter((user) => user.name.toLowerCase().includes(query)),
     );
   }
 
-  // Easy access in template
-  get f() {
-    return this.form.controls;
-  }
-
-  isInvalid(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return !!(control && control.invalid && (control.touched || this.formSubmitted));
+  protected isInvalid(controlName: keyof typeof this.form.controls): boolean {
+    const control = this.form.controls[controlName];
+    return control.invalid && (control.touched || this.formSubmitted());
   }
 }

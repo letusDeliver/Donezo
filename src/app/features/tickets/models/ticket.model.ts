@@ -1,7 +1,15 @@
+export type TicketStatus = 'backlog' | 'todo' | 'inprogress' | 'review' | 'done';
+export type TicketPriority = 'low' | 'medium' | 'high';
+
 export interface Ticket {
   id: string;
   title: string;
-  status: 'backlog' | 'todo' | 'inprogress' | 'review' | 'done';
-  priority: 'low' | 'medium' | 'high';
+  status: TicketStatus;
+  priority: TicketPriority;
   assignee: string;
+}
+
+export interface TicketPage {
+  data: Ticket[];
+  hasMore: boolean;
 }

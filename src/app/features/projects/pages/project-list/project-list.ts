@@ -1,25 +1,16 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ProjectService } from '../../services/project.service';
-import { ProjectModel } from '../../models/project.model';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
-  standalone: true,
   selector: 'app-project-list',
-  imports: [CommonModule, TableModule],
+  imports: [DatePipe, TableModule, ButtonModule],
   templateUrl: './project-list.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './project-list.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectList {
-  projects: ProjectModel[] = [];
-
-  constructor(private projectService: ProjectService) {}
-
-  ngOnInit() {
-    this.projectService.projects$.subscribe((data) => {
-      this.projects = data;
-    });
-  }
+  protected readonly projects = inject(ProjectService).projects;
 }

@@ -1,12 +1,12 @@
 <div class="card">
   <p-table
-    [value]="stories"
+    [value]="stories()"
     dataKey="id"
     [rows]="10"
     [size]="'small'"
     [rowsPerPageOptions]="[10, 25, 50]"
-    [loading]="loading"
-    [paginator]="stories.length > 10"
+    [loading]="loading()"
+    [paginator]="stories().length > 10"
     showGridlines
   >
     <ng-template #caption>
@@ -75,12 +75,12 @@
 
         <!-- Status -->
         <td>
-          <p-tag [value]="story.status" [severity]="getStatusSeverity(story.status)" />
+          <p-tag [value]="story.status" [severity]="statusSeverity(story.status)" />
         </td>
 
         <!-- Priority -->
         <td>
-          <p-tag [value]="story.priority" [severity]="getPrioritySeverity(story.priority)" />
+          <p-tag [value]="story.priority" [severity]="prioritySeverity(story.priority)" />
         </td>
 
         <!-- Story Points -->
@@ -123,22 +123,21 @@
     </ng-template>
     <ng-template #emptymessage>
       <tr>
-        <td colspan="7">No customers found.</td>
+        <td colspan="7">No user stories found.</td>
       </tr>
     </ng-template>
   </p-table>
 </div>
 
 <app-add-story-modal
-  [visible]="show_create_story_modal"
-  [story]="selectedStory"
-  (visibleChange)="show_create_story_modal = $event"
+  [(visible)]="editorOpen"
+  [story]="editedStory()"
   (save)="handleSave($event)"
-></app-add-story-modal>
+/>
 
 <app-story-detail
-  [visible]="show_story_details_modal"
-  [storyDetails]="selected_story_details"
-  (close_story_detail_modal)="show_story_details_modal = false"
-  (edit_story)="editStoryFromModal($event)"
-></app-story-detail>
+  [visible]="detailOpen()"
+  [story]="detailStory()"
+  (closed)="detailOpen.set(false)"
+  (edit)="editStoryFromDetail($event)"
+/>

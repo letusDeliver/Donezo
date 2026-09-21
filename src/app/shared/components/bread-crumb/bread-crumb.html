@@ -1,7 +1,7 @@
 <!-- breadcrumb.html -->
 <nav aria-label="Breadcrumb">
   <ol class="breadcrumb">
-    @for (crumb of breadcrumbs; track crumb) {
+    @for (crumb of breadcrumbs(); track crumb.path) {
       <li class="breadcrumb-item" [class.active]="crumb.isLast">
         @if (!crumb.isLast) {
           <a [routerLink]="crumb.path">{{ crumb.label }}</a>

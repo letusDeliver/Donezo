@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-project-create',
   imports: [],
   templateUrl: './project-create.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './project-create.scss',
 })
 export class ProjectCreate {

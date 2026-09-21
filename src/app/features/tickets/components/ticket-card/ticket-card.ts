@@ -1,45 +1,38 @@
-import { Component, ElementRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Ticket } from '../../models/ticket.model';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
+
+const SCROLL_PADDING = 40;
 
 @Component({
   selector: 'app-ticket-card',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
+  imports: [NgClass],
   templateUrl: './ticket-card.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './ticket-card.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TicketCard {
-  @Input() ticket!: Ticket;
+  private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  constructor(private el: ElementRef){}
+  readonly ticket = input.required<Ticket>();
 
-  onFocus() {
+  /** Keep the focused card inside the horizontally scrolling board. */
+  protected onFocus() {
     const card = this.el.nativeElement;
-
-    // 🔥 find horizontal scroll container
-    const board = card.closest('.kanban-board');
-
+    const board = card.closest<HTMLElement>('.kanban-board');
     if (!board) return;
 
     const cardRect = card.getBoundingClientRect();
     const boardRect = board.getBoundingClientRect();
 
-    const offset = 40; // padding
-
-    // 👉 if card is out of right viewport
     if (cardRect.right > boardRect.right) {
       board.scrollBy({
-        left: cardRect.right - boardRect.right + offset,
+        left: cardRect.right - boardRect.right + SCROLL_PADDING,
         behavior: 'smooth',
       });
-    }
-
-    // 👉 if card is out of left viewport
-    else if (cardRect.left < boardRect.left) {
+    } else if (cardRect.left < boardRect.left) {
       board.scrollBy({
-        left: cardRect.left - boardRect.left - offset,
+        left: cardRect.left - boardRect.left - SCROLL_PADDING,
         behavior: 'smooth',
       });
     }

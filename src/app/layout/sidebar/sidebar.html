@@ -1,20 +1,20 @@
-<aside class="sidebar" aria-label="Application sidebar" [class.collapsed]="collapsed">
+<aside class="sidebar" aria-label="Application sidebar" [class.collapsed]="collapsed()">
   <!-- BRANDING -->
-  <div class="sidebar-brand" [attr.title]="collapsed ? 'Donezo' : null">
+  <div class="sidebar-brand" [attr.title]="collapsed() ? 'Donezo' : null">
     <i class="pi pi-check-circle text-success"></i>
-    @if (!collapsed) {
+    @if (!collapsed()) {
       <span>Donezo</span>
     }
   </div>
 
   <!-- MAIN NAVIGATION -->
   <nav class="sidebar-nav" aria-labelledby="main-nav-title">
-    @if (!collapsed) {
+    @if (!collapsed()) {
       <p id="main-nav-title" class="sidebar-section-title">Menu</p>
     }
 
     <ul class="nav flex-column" role="menu">
-      @for (item of menuItems; track item) {
+      @for (item of menuItems; track item.label) {
         <li class="nav-item mb-2">
           <!-- SIMPLE LINK -->
           @if (!item.children) {
@@ -24,12 +24,12 @@
               [routerLinkActiveOptions]="{ exact: false }"
               class="nav-link"
               role="menuitem"
-              [attr.title]="collapsed ? item.label : null"
+              [attr.title]="collapsed() ? item.label : null"
               >
               @if (item.icon) {
                 <i [class]="item.icon"></i>
               }
-              @if (!collapsed) {
+              @if (!collapsed()) {
                 <span>{{ item.label }}</span>
               }
             </a>
@@ -42,31 +42,31 @@
               >
               <button
                 class="nav-link parent-menu"
-                (click)="!collapsed && toggleMenu(item)"
-                (keydown.enter)="!collapsed && toggleMenu(item)"
-                (keydown.space)="!collapsed && toggleMenu(item)"
-                [attr.title]="collapsed ? item.label : null"
+                (click)="!collapsed() && toggleMenu(item)"
+                (keydown.enter)="!collapsed() && toggleMenu(item)"
+                (keydown.space)="!collapsed() && toggleMenu(item)"
+                [attr.title]="collapsed() ? item.label : null"
                 >
                 @if (item.icon) {
                   <i [class]="item.icon"></i>
                 }
-                @if (!collapsed) {
+                @if (!collapsed()) {
                   <span>{{ item.label }}</span>
                 }
-                @if (!collapsed) {
+                @if (!collapsed()) {
                   <i
                     class="pi toggle-icon"
-                    [ngClass]="item.expanded ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
+                    [ngClass]="isExpanded(item) ? 'pi-chevron-down rotated' : 'pi-chevron-right'"
                   ></i>
                 }
               </button>
               <!-- CHILD MENU -->
-              @if (!collapsed) {
+              @if (!collapsed()) {
                 <ul
                   class="nav flex-column child-menu"
-                  [class.expanded]="item.expanded"
+                  [class.expanded]="isExpanded(item)"
                   >
-                  @for (child of item.children; track child) {
+                  @for (child of item.children; track child.route) {
                     <li>
                       <a
                         [routerLink]="child.route"
@@ -90,7 +90,7 @@
 
   <!-- GENERAL NAVIGATION -->
   <nav class="sidebar-bottom" aria-labelledby="general-nav-title">
-    @if (!collapsed) {
+    @if (!collapsed()) {
       <p id="general-nav-title" class="sidebar-section-title">General</p>
     }
 
@@ -101,10 +101,10 @@
           routerLinkActive="active"
           class="nav-link"
           role="menuitem"
-          [attr.title]="collapsed ? 'Settings' : null"
+          [attr.title]="collapsed() ? 'Settings' : null"
           >
           <i class="pi pi-cog"></i>
-          @if (!collapsed) {
+          @if (!collapsed()) {
             <span>Settings</span>
           }
         </a>
@@ -116,10 +116,10 @@
           routerLinkActive="active"
           class="nav-link"
           role="menuitem"
-          [attr.title]="collapsed ? 'Help' : null"
+          [attr.title]="collapsed() ? 'Help' : null"
           >
           <i class="pi pi-question-circle"></i>
-          @if (!collapsed) {
+          @if (!collapsed()) {
             <span>Help</span>
           }
         </a>

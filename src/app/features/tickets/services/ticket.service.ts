@@ -1,551 +1,78 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { Ticket } from '../models/ticket.model';
+import { Observable, delay, of } from 'rxjs';
+import { Ticket, TicketPage, TicketPriority, TicketStatus } from '../models/ticket.model';
+import { TicketFilter } from '../models/ticket-filter.model';
+
+const PAGE_SIZE = 5;
+
+const TITLES = [
+  'Investigate login issue',
+  'Design system planning',
+  'Setup auth module',
+  'Create dashboard UI',
+  'Handle API errors',
+  'Sidebar responsiveness',
+  'Fix routing issue',
+  'Optimize performance',
+  'Write unit tests',
+  'Refactor state management',
+];
+const PRIORITIES: TicketPriority[] = ['high', 'medium', 'low'];
+const ASSIGNEES = ['K', 'A', 'R', 'D'];
+
+/** Mock tickets per column (enough to exercise pagination / infinite scroll). */
+const SEED: Record<TicketStatus, number> = {
+  backlog: 12,
+  todo: 14,
+  inprogress: 12,
+  review: 16,
+  done: 10,
+};
+
+function buildMockTickets(): Ticket[] {
+  const tickets: Ticket[] = [];
+  let seq = 100;
+
+  for (const status of Object.keys(SEED) as TicketStatus[]) {
+    for (let i = 0; i < SEED[status]; i++, seq++) {
+      tickets.push({
+        id: `${seq % 3 === 0 ? 'BUG' : 'TASK'}-${seq}`, // unique per ticket
+        title: TITLES[seq % TITLES.length],
+        status,
+        priority: PRIORITIES[seq % PRIORITIES.length],
+        assignee: ASSIGNEES[seq % ASSIGNEES.length],
+      });
+    }
+  }
+
+  return tickets;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
-  mockTickets: Ticket[] = [
-    // BACKLOG
-    {
-      id: 'BUG-101',
-      title: 'Investigate login issue',
-      status: 'backlog',
-      priority: 'high',
-      assignee: 'K',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'medium',
-      assignee: 'R',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'low',
-      assignee: 'R',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'medium',
-      assignee: 'D',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'low',
-      assignee: 'K',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'low',
-      assignee: 'K',
-    },
-    {
-      id: 'TASK-102',
-      title: 'Design system planning',
-      status: 'backlog',
-      priority: 'low',
-      assignee: 'K',
-    },
+  private readonly tickets = buildMockTickets();
 
-    // TODO
-    { id: 'BUG-103', title: 'Fix login bug', status: 'todo', priority: 'high', assignee: 'K' },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-104',
-      title: 'Setup auth module',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'A',
-    },
+  getTickets(
+    status: TicketStatus,
+    page: number,
+    filters?: Partial<TicketFilter>,
+  ): Observable<TicketPage> {
+    const search = filters?.search?.toLowerCase();
 
-    // IN PROGRESS
-    {
-      id: 'TASK-105',
-      title: 'Create dashboard UI',
-      status: 'inprogress',
-      priority: 'medium',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'BUG-106',
-      title: 'Handle API errors',
-      status: 'inprogress',
-      priority: 'high',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-107',
-      title: 'Sidebar responsiveness',
-      status: 'inprogress',
-      priority: 'low',
-      assignee: 'K',
-    },
+    const filtered = this.tickets.filter(
+      (t) =>
+        t.status === status &&
+        (!search || t.title.toLowerCase().includes(search)) &&
+        (!filters?.priority || t.priority === filters.priority) &&
+        (!filters?.type || t.id.startsWith(filters.type)) &&
+        (!filters?.assignee || t.assignee === filters.assignee),
+    );
 
-    // REVIEW
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'BUG-108',
-      title: 'Fix routing issue',
-      status: 'review',
-      priority: 'high',
-      assignee: 'R',
-    },
-    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },
-    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },    {
-      id: 'TASK-109',
-      title: 'Optimize performance',
-      status: 'review',
-      priority: 'medium',
-      assignee: 'A',
-    },
+    const start = (page - 1) * PAGE_SIZE;
 
-    // DONE
-    {
-      id: 'TASK-110',
-      title: 'Setup project structure',
-      status: 'done',
-      priority: 'low',
-      assignee: 'K',
-    },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    { id: 'BUG-111', title: 'Fix UI alignment', status: 'done', priority: 'low', assignee: 'R' },
-    {
-      id: 'TASK-112',
-      title: 'Initial commit setup',
-      status: 'done',
-      priority: 'medium',
-      assignee: 'A',
-    },
-  ];
-  getTickets(status: string, page: number, filters?: any) {
-    const pageSize = 5;
-
-    let filtered = this.mockTickets.filter((t) => t.status === status);
-
-    // 🔥 Apply filters
-    if (filters?.search) {
-      filtered = filtered.filter((t) =>
-        t.title.toLowerCase().includes(filters.search.toLowerCase())
-      );
-    }
-
-    if (filters?.priority) {
-      filtered = filtered.filter((t) => t.priority === filters.priority);
-    }
-
-    if (filters?.type) {
-      filtered = filtered.filter((t) => t.id.startsWith(filters.type));
-    }
-
-    // 🔥 Pagination
-    const start = (page - 1) * pageSize;
-    const paginated = filtered.slice(start, start + pageSize);
-
-    return of({
-      data: paginated,
-      hasMore: start + pageSize < filtered.length,
-    }).pipe(delay(500)); // simulate API delay
+    return of<TicketPage>({
+      data: filtered.slice(start, start + PAGE_SIZE),
+      hasMore: start + PAGE_SIZE < filtered.length,
+    }).pipe(delay(500)); // simulate API latency
   }
 }

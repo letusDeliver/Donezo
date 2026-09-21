@@ -1,61 +1,51 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SIDEBAR_MENU } from '../../core/constants/sidebar-menu';
 import { SidebarMenuItem } from '../../core/models/sidebar-menu.model';
-import { filter } from 'rxjs/operators';
-import { ANGULAR_IMPORTS } from '../../shared/ui/angular-imports';
+import { RouteState } from '../../core/services/route-state.service';
+import { NgClass } from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-sidebar',
-  imports: [...ANGULAR_IMPORTS, RouterLink, RouterLinkActive],
+  imports: [NgClass, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sidebar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
-  menuItems: SidebarMenuItem[] = SIDEBAR_MENU;
-  @Input() collapsed: boolean = false;
+  private readonly routeState = inject(RouteState);
 
-  constructor(private router: Router) {}
+  readonly collapsed = input(false);
 
-  ngOnInit(): void {
-    this.expandActiveParent();
+  protected readonly menuItems: readonly SidebarMenuItem[] = SIDEBAR_MENU;
 
-    // Listen to route change
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.expandActiveParent();
-    });
+  /** Labels of expanded parent menus (only one at a time). */
+  private readonly expanded = signal<string | null>(null);
+
+  /** Parent whose child route matches the current URL. */
+  private readonly activeParent = computed(
+    () => this.menuItems.find((menu) => this.hasActiveChild(menu))?.label ?? null,
+  );
+
+  constructor() {
+    // Auto-expand the active parent whenever the route changes.
+    effect(() => this.expanded.set(this.activeParent()));
   }
 
-  toggleMenu(menu: SidebarMenuItem) {
-    // Collapse other menus (professional UX)
-    this.menuItems.forEach((item) => {
-      if (item !== menu) {
-        item.expanded = false;
-      }
-    });
-
-    menu.expanded = !menu.expanded;
+  protected isExpanded(menu: SidebarMenuItem): boolean {
+    return this.expanded() === menu.label;
   }
 
-  isParentActive(menu: SidebarMenuItem): boolean {
-    if (!menu.children) return false;
-
-    const currentUrl = this.router.url;
-
-    return menu.children.some((child) => currentUrl.startsWith(child.route || ''));
+  protected isParentActive(menu: SidebarMenuItem): boolean {
+    return this.activeParent() === menu.label;
   }
 
-  private expandActiveParent() {
-    const currentUrl = this.router.url;
+  protected toggleMenu(menu: SidebarMenuItem) {
+    this.expanded.update((current) => (current === menu.label ? null : menu.label));
+  }
 
-    this.menuItems.forEach((menu) => {
-      if (menu.children) {
-        const match = menu.children.some((child) => currentUrl.startsWith(child.route || ''));
-
-        menu.expanded = match;
-      }
-    });
+  private hasActiveChild(menu: SidebarMenuItem): boolean {
+    const url = this.routeState.url();
+    return !!menu.children?.some((child) => url.startsWith(child.route || ''));
   }
 }

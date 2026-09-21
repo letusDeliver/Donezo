@@ -1,73 +1,58 @@
-<div class="card d-flex justify-content-center">
-  @if (storyDetails) {
-    <p-dialog
-      [header]="storyDetails.title"
-      [modal]="true"
-      [(visible)]="visible"
-      [style]="{ width: '55rem' }"
-      [breakpoints]="{ '1199px': '75vw', '575px': '95vw' }"
-      [draggable]="false"
-      [resizable]="false"
-      [dismissableMask]="true"
-      (onHide)="closeStoryDetails()"
-      >
-      <div class="w-100 p-3 d-flex flex-column gap-4">
-        <!-- TOP BAR -->
-        <div class="d-flex justify-content-between align-items-center w-100">
-          <!-- STATUS CHIPS -->
-          <div class="d-flex align-items-center">
-            <p-tag
-              class="me-2"
-              [value]="storyDetails.status"
-              [severity]="getStatusSeverity(storyDetails.status)"
-            ></p-tag>
-            <p-tag
-              [value]="storyDetails.priority"
-              [severity]="getPrioritySeverity(storyDetails.priority)"
-            ></p-tag>
-          </div>
-          <!-- EDIT BUTTON -->
-          <button
-            pButton
-            icon="pi pi-pencil"
-            label="Edit"
-            class="btn btn-outline-secondary btn-sm"
-            (click)="onEdit()"
-          ></button>
+@if (story(); as story) {
+  <p-dialog
+    [header]="story.title"
+    [modal]="true"
+    [visible]="visible()"
+    [style]="{ width: '55rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '95vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+    (onHide)="closed.emit()"
+  >
+    <div class="w-100 p-3 d-flex flex-column gap-4">
+      <!-- TOP BAR -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="d-flex align-items-center">
+          <p-tag class="me-2" [value]="story.status" [severity]="statusSeverity(story.status)" />
+          <p-tag [value]="story.priority" [severity]="prioritySeverity(story.priority)" />
         </div>
-        <!-- DESCRIPTION -->
-        <div class="bg-light rounded p-3">
-          <div class="text-muted small mb-2">Description</div>
-          <textarea
-            class="form-control"
-            rows="5"
-            [value]="storyDetails.description"
-            readonly
-          ></textarea>
+
+        <button
+          pButton
+          icon="pi pi-pencil"
+          label="Edit"
+          class="btn btn-outline-secondary btn-sm"
+          (click)="onEdit()"
+        ></button>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="bg-light rounded p-3">
+        <div class="text-muted small mb-2">Description</div>
+        <textarea class="form-control" rows="5" [value]="story.description" readonly></textarea>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="row mt-2">
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+          <div class="text-muted small mb-1">Assignee</div>
+          <div class="d-flex align-items-center gap-2 fw-medium">
+            <i class="pi pi-user text-primary"></i>
+            {{ story.assignee.name }}
+          </div>
         </div>
-        <!-- DETAILS -->
-        <div class="row mt-2">
-          <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <div class="text-muted small mb-1">Assignee</div>
-            <div class="d-flex align-items-center gap-2 fw-medium">
-              <i class="pi pi-user text-primary"></i>
-              {{ storyDetails.assignee.name }}
-            </div>
-          </div>
-          <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <div class="text-muted small mb-1">Story Points</div>
-            <div class="fw-medium">
-              {{ storyDetails.storyPoints }}
-            </div>
-          </div>
-          <div class="col-12 col-md-4">
-            <div class="text-muted small mb-1">Created At</div>
-            <div class="fw-medium">
-              {{ storyDetails.createdAt | date: 'MMM dd, yyyy' }}
-            </div>
-          </div>
+
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+          <div class="text-muted small mb-1">Story Points</div>
+          <div class="fw-medium">{{ story.storyPoints }}</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="text-muted small mb-1">Created At</div>
+          <div class="fw-medium">{{ story.createdAt | date: 'MMM dd, yyyy' }}</div>
         </div>
       </div>
-    </p-dialog>
-  }
-</div>
+    </div>
+  </p-dialog>
+}

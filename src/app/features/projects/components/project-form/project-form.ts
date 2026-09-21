@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-project-form',
   imports: [],
   templateUrl: './project-form.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './project-form.scss',
 })
 export class ProjectForm {

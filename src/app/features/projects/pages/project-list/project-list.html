@@ -1,7 +1,7 @@
 <h2>Projects</h2>
 
-<p-table [value]="projects">
-  <ng-template pTemplate="header">
+<p-table [value]="projects()">
+  <ng-template #header>
     <tr>
       <th>Name</th>
       <th>Status</th>
@@ -10,12 +10,11 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-project>
+  <ng-template #body let-project>
     <tr>
       <td>{{ project.name }}</td>
       <td>{{ project.status }}</td>
       <td>{{ project.createdAt | date }}</td>
-
       <td>
         <button pButton label="Edit"></button>
       </td>

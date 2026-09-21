@@ -1,40 +1,24 @@
 <div class="kanban-column">
-
-  <!-- 🔥 Header -->
+  <!-- Header -->
   <div class="column-header">
-
-    <!-- Left -->
     <div class="header-left">
-      <span
-        class="status-dot"
-        [ngClass]="status"
-        aria-hidden="true"
-      ></span>
-
-      <h6>{{ title }}</h6>
+      <span class="status-dot" [ngClass]="status()" aria-hidden="true"></span>
+      <h6>{{ title() }}</h6>
     </div>
 
-    <!-- Right -->
     <div class="header-right">
-      <span class="count">{{ tickets.length }}</span>
+      <span class="count">{{ tickets().length }}</span>
     </div>
-
   </div>
 
   <!-- Body -->
   <div class="column-body">
-    @for (ticket of tickets; track trackById($index, ticket)) {
-      <app-ticket-card
-        [ticket]="ticket"
-      ></app-ticket-card>
+    @for (ticket of tickets(); track ticket.id) {
+      <app-ticket-card [ticket]="ticket" />
     }
 
-    <!-- Loading -->
-    @if (loading) {
-      <div class="loading">
-        Loading...
-      </div>
+    @if (loading()) {
+      <div class="loading">Loading...</div>
     }
   </div>
-
 </div>

@@ -36,7 +36,7 @@
               <label>Description <span class="text-danger">*</span></label>
 
               <textarea
-                pInputTextarea
+                pTextarea
                 formControlName="description"
                 class="w-100"
                 [invalid]="isInvalid('description')"
@@ -63,11 +63,10 @@
               <p-autocomplete
                 class="w-100"
                 formControlName="assignee"
-                [suggestions]="filteredAssignees"
+                [suggestions]="filteredAssignees()"
                 (completeMethod)="searchAssignee($event)"
                 field="name"
                 optionLabel="name"
-                optionValue="name"
                 [dropdown]="true"
                 appendTo="body"
                 [invalid]="isInvalid('assignee')"

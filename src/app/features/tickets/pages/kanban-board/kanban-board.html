@@ -1,23 +1,22 @@
 <div class="kanban-wrapper">
-  <!-- Filters (Sticky) -->
+  <!-- Filters (sticky) -->
   <div class="filters-bar">
-    <app-ticket-filters (filtersChange)="applyFilters($event)"></app-ticket-filters>
+    <app-ticket-filters (filtersChange)="applyFilters($event)" />
   </div>
 
-  <!-- Scroll hint (RIGHT FADE) -->
+  <!-- Scroll hint (right fade) -->
   <div class="scroll-hint"></div>
 
   <!-- Board -->
   <div class="kanban-board" role="region" aria-label="Kanban Board">
-    @for (col of statuses; track col) {
+    @for (col of statuses; track col.key) {
       <div class="kanban-column-wrapper">
         <app-kanban-column
           [title]="col.label"
           [status]="col.key"
-          [tickets]="columnsData[col.key].data"
-          [loading]="columnsData[col.key].loading"
-          >
-        </app-kanban-column>
+          [tickets]="columns()[col.key].data"
+          [loading]="columns()[col.key].loading"
+        />
       </div>
     }
   </div>

@@ -1,27 +1,51 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Injector,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DOCUMENT } from '@angular/common';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { TicketService } from '../../services/ticket.service';
-import { Ticket } from '../../models/ticket.model';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { KanbanColumn } from '../../components/kanban-column/kanban-column';
-import { Subject, takeUntil, debounceTime } from 'rxjs';
+import { Ticket, TicketStatus } from '../../models/ticket.model';
 import { TicketFilter } from '../../models/ticket-filter.model';
+import { KanbanColumn } from '../../components/kanban-column/kanban-column';
 import { TicketFilters } from '../../components/ticket-filters/ticket-filters';
-import { ScrollService } from '../../../../core/services/scroll.service';
+import { ScrollPosition, ScrollService } from '../../../../core/services/scroll.service';
+
+interface ColumnState {
+  data: Ticket[];
+  page: number;
+  loading: boolean;
+  hasMore: boolean;
+}
+
+type ColumnsState = Record<TicketStatus, ColumnState>;
+
+const SCROLL_THRESHOLD = 150;
+const FILTER_DEBOUNCE_MS = 300;
+
+const initialColumn = (): ColumnState => ({ data: [], page: 1, loading: false, hasMore: true });
 
 @Component({
-  standalone: true,
   selector: 'app-kanban-board',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, KanbanColumn, TicketFilters],
+  imports: [KanbanColumn, TicketFilters],
   templateUrl: './kanban-board.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kanban-board.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KanbanBoard implements OnInit, OnDestroy, AfterViewInit {
-  private destroy$ = new Subject<void>();
-  private filterSubject = new Subject<TicketFilter>();
+export class KanbanBoard {
+  private readonly ticketService = inject(TicketService);
+  private readonly scrollService = inject(ScrollService);
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
 
-  statuses = [
+  protected readonly statuses: { label: string; key: TicketStatus }[] = [
     { label: 'Backlog', key: 'backlog' },
     { label: 'Todo', key: 'todo' },
     { label: 'In Progress', key: 'inprogress' },
@@ -29,160 +53,101 @@ export class KanbanBoard implements OnInit, OnDestroy, AfterViewInit {
     { label: 'Done', key: 'done' },
   ];
 
-  columnsData: Record<
-    string,
-    {
-      data: Ticket[];
-      page: number;
-      loading: boolean;
-      hasMore: boolean;
-    }
-  > = {};
+  protected readonly columns = signal<ColumnsState>(this.emptyColumns());
 
-  filters: TicketFilter = {
-    search: '',
-    priority: '',
-    type: '',
-    assignee: '',
-  };
+  private filters: TicketFilter = { search: '', priority: '', type: '', assignee: '' };
 
-  constructor(
-    private ticketService: TicketService,
-    private scrollService: ScrollService,
-  ) {}
+  private readonly filter$ = new Subject<TicketFilter>();
+  /** Emits when filters change so in-flight requests for the old filters are dropped. */
+  private readonly reset$ = new Subject<void>();
 
-  ngOnInit() {
-    this.initializeColumns();
+  constructor() {
+    this.loadAll();
 
-    /* FILTER HANDLING */
-    this.filterSubject.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe((filters) => {
-      this.filters = filters;
-      this.resetAndReload();
-    });
+    this.filter$
+      .pipe(debounceTime(FILTER_DEBOUNCE_MS), takeUntilDestroyed())
+      .subscribe((filters) => {
+        this.filters = filters;
+        this.reset$.next();
+        this.columns.set(this.emptyColumns());
+        this.loadAll();
+      });
 
-    /* MAIN SCROLL LISTENER */
-    this.scrollService.scroll$.pipe(takeUntil(this.destroy$)).subscribe((pos) => {
-      this.handleScroll(pos);
-    });
+    this.scrollService.scroll$
+      .pipe(takeUntilDestroyed())
+      .subscribe((pos) => this.onScroll(pos));
+
+    // One-off horizontal scroll hint once the board is rendered.
+    afterNextRender(() => this.hintHorizontalScroll());
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      const el = document.querySelector('.kanban-board') as HTMLElement;
-
-      if (!el) return;
-
-      // only if horizontal scroll exists
-      if (el.scrollWidth > el.clientWidth) {
-        el.scrollTo({ left: 80, behavior: 'smooth' });
-
-        setTimeout(() => {
-          el.scrollTo({ left: 0, behavior: 'smooth' });
-        }, 600);
-      }
-
-      // existing auto load fix (keep this)
-      this.checkAndFillScreen();
-    }, 800);
+  protected applyFilters(filters: TicketFilter) {
+    this.filter$.next(filters);
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  /* INITIAL LOAD */
-  initializeColumns() {
-    this.statuses.forEach((col) => {
-      this.columnsData[col.key] = this.getInitialColumnState();
-      this.loadTickets(col.key);
-    });
-  }
-
-  resetAndReload() {
-    this.statuses.forEach((col) => {
-      this.columnsData[col.key] = this.getInitialColumnState();
-      this.loadTickets(col.key);
-    });
-
-    setTimeout(() => this.checkAndFillScreen(), 300); // important
-  }
-
-  getInitialColumnState() {
+  private emptyColumns(): ColumnsState {
     return {
-      data: [],
-      page: 1,
-      loading: false,
-      hasMore: true,
+      backlog: initialColumn(),
+      todo: initialColumn(),
+      inprogress: initialColumn(),
+      review: initialColumn(),
+      done: initialColumn(),
     };
   }
 
-  /* API CALL */
-  loadTickets(status: string) {
-    const col = this.columnsData[status];
+  private patchColumn(status: TicketStatus, patch: Partial<ColumnState>) {
+    this.columns.update((cols) => ({ ...cols, [status]: { ...cols[status], ...patch } }));
+  }
 
-    if (!col || col.loading || !col.hasMore) return;
+  private loadAll() {
+    this.statuses.forEach(({ key }) => this.loadTickets(key));
+  }
 
-    col.loading = true;
+  private loadTickets(status: TicketStatus) {
+    const col = this.columns()[status];
+    if (col.loading || !col.hasMore) return;
+
+    this.patchColumn(status, { loading: true });
 
     this.ticketService
       .getTickets(status, col.page, this.filters)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.reset$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          col.data = [...col.data, ...(res?.data || [])];
-          col.page++;
-          col.hasMore = res?.hasMore ?? false;
-          col.loading = false;
-
-          // FIX: ensure viewport fills
-          setTimeout(() => this.checkAndFillScreen(), 100);
+          const current = this.columns()[status];
+          this.patchColumn(status, {
+            data: [...current.data, ...res.data],
+            page: current.page + 1,
+            hasMore: res.hasMore,
+            loading: false,
+          });
+          // Once the new cards are rendered, make sure the page is actually scrollable.
+          afterNextRender(() => this.fillViewport(), { injector: this.injector });
         },
-        error: () => {
-          col.loading = false;
-        },
+        error: () => this.patchColumn(status, { loading: false }),
       });
   }
 
-  applyFilters(filters: TicketFilter) {
-    this.filterSubject.next(filters);
-  }
-
-  /* SCROLL LOGIC */
-  handleScroll(pos: { scrollTop: number; clientHeight: number; scrollHeight: number }) {
-    const threshold = 150;
-
-    if (pos.scrollTop + pos.clientHeight >= pos.scrollHeight - threshold) {
-      this.statuses.forEach((col) => {
-        this.loadTickets(col.key);
-      });
+  private onScroll(pos: ScrollPosition) {
+    if (pos.scrollTop + pos.clientHeight >= pos.scrollHeight - SCROLL_THRESHOLD) {
+      this.loadAll();
     }
   }
 
-  /* MAIN FIX: AUTO LOAD IF NO SCROLL */
-  checkAndFillScreen() {
-    const container = document.querySelector('.content-area') as HTMLElement;
+  /** Keep loading while there's more data but nothing to scroll (tall screens). */
+  private fillViewport() {
+    const container = this.document.querySelector<HTMLElement>('.content-area');
+    if (!container || container.scrollHeight > container.clientHeight) return;
 
-    if (!container) return;
+    this.loadAll();
+  }
 
-    const isScrollable = container.scrollHeight > container.clientHeight;
+  private hintHorizontalScroll() {
+    const board = this.document.querySelector<HTMLElement>('.kanban-board');
+    if (!board || board.scrollWidth <= board.clientWidth) return;
 
-    if (!isScrollable) {
-      let loaded = false;
-
-      this.statuses.forEach((col) => {
-        const column = this.columnsData[col.key];
-
-        if (column.hasMore && !column.loading) {
-          this.loadTickets(col.key);
-          loaded = true;
-        }
-      });
-
-      // Continue until scroll appears or no more data
-      if (loaded) {
-        setTimeout(() => this.checkAndFillScreen(), 300);
-      }
-    }
+    board.scrollTo({ left: 80, behavior: 'smooth' });
+    const timer = setTimeout(() => board.scrollTo({ left: 0, behavior: 'smooth' }), 600);
+    this.destroyRef.onDestroy(() => clearTimeout(timer));
   }
 }

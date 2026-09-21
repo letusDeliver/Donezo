@@ -1,120 +1,95 @@
-import { Component, signal, HostListener, ChangeDetectionStrategy } from '@angular/core';
-import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Header } from './layout/header/header';
-import { ANGULAR_IMPORTS } from './shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from './shared/ui/primeng-imports';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScrollService } from './core/services/scroll.service';
-import { filter } from 'rxjs/operators';
+import { Viewport } from './core/services/viewport.service';
+
+const COLLAPSE_KEY = 'sidebarCollapsed';
+const SWIPE_THRESHOLD = 70;
+
+function readCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COLLAPSE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
 
 @Component({
-  standalone: true,
   selector: 'app-root',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, RouterOutlet, Sidebar, Header],
+  imports: [RouterOutlet, Sidebar, Header],
   templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly title = signal('jira-clone');
+  private readonly router = inject(Router);
+  private readonly scrollService = inject(ScrollService);
 
-  sidebarOpen = false;
-  sidebarCollapsed = false;
+  protected readonly isMobile = inject(Viewport).isMobile;
 
-  isMobile = false;
-  isHovering = false;
+  protected readonly sidebarOpen = signal(false);
+  private readonly collapsePreference = signal(readCollapsed());
+  protected readonly isHovering = signal(false);
+
+  /** Collapse is a desktop-only concept. */
+  protected readonly sidebarCollapsed = computed(() => !this.isMobile() && this.collapsePreference());
+  protected readonly sidebarIconOnly = computed(() => this.sidebarCollapsed() && !this.isHovering());
 
   private touchStartX = 0;
-  private touchEndX = 0;
 
-  constructor(
-    private router: Router,
-    private scrollService: ScrollService,
-  ) {
-    this.checkScreen();
+  constructor() {
+    // Persist the desktop collapse preference.
+    effect(() => {
+      const value = this.collapsePreference();
+      try {
+        localStorage.setItem(COLLAPSE_KEY, String(value));
+      } catch {
+        /* storage unavailable */
+      }
+    });
 
-    // restore collapse ONLY for desktop
-    const saved = localStorage.getItem('sidebarCollapsed');
-    if (saved && !this.isMobile) {
-      this.sidebarCollapsed = JSON.parse(saved);
-    }
-
-    // auto close on route change (mobile)
+    // Close the mobile drawer after navigation.
     this.router.events
       .pipe(
-        takeUntilDestroyed(),
         filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
       )
-      .subscribe(() => {
-        if (this.isMobile) {
-          this.sidebarOpen = false;
-        }
-      });
+      .subscribe(() => this.sidebarOpen.set(false));
   }
 
-  @HostListener('window:resize')
-  checkScreen() {
-    this.isMobile = window.innerWidth <= 768;
-
-    // IMPORTANT FIX: mobile me collapse disable
-    if (this.isMobile) {
-      this.sidebarCollapsed = false;
-      this.isHovering = false;
-    }
+  protected toggleSidebar() {
+    if (this.isMobile()) this.sidebarOpen.update((open) => !open);
   }
 
-  // Header actions
-  toggleSidebar() {
-    if (this.isMobile) {
-      this.sidebarOpen = !this.sidebarOpen;
-    }
+  protected toggleCollapse() {
+    if (!this.isMobile()) this.collapsePreference.update((c) => !c);
   }
 
-  toggleCollapse() {
-    if (!this.isMobile) {
-      this.sidebarCollapsed = !this.sidebarCollapsed;
-
-      localStorage.setItem('sidebarCollapsed', JSON.stringify(this.sidebarCollapsed));
-    }
+  protected closeSidebar() {
+    this.sidebarOpen.set(false);
   }
 
-  closeSidebar() {
-    this.sidebarOpen = false;
+  protected onSidebarHover(state: boolean) {
+    this.isHovering.set(state && this.sidebarCollapsed());
   }
 
-  // Hover expand (desktop only)
-  onSidebarHover(state: boolean) {
-    if (!this.isMobile && this.sidebarCollapsed) {
-      this.isHovering = state;
-    } else {
-      this.isHovering = false;
-    }
-  }
-
-  // Swipe gesture
-  onTouchStart(event: TouchEvent) {
+  protected onTouchStart(event: TouchEvent) {
     this.touchStartX = event.changedTouches[0].screenX;
   }
 
-  onTouchEnd(event: TouchEvent) {
-    this.touchEndX = event.changedTouches[0].screenX;
-    this.handleSwipe();
+  protected onTouchEnd(event: TouchEvent) {
+    if (!this.isMobile()) return;
+
+    const diff = event.changedTouches[0].screenX - this.touchStartX;
+    if (diff > SWIPE_THRESHOLD) this.sidebarOpen.set(true);
+    if (diff < -SWIPE_THRESHOLD) this.sidebarOpen.set(false);
   }
 
-  private handleSwipe() {
-    const diff = this.touchEndX - this.touchStartX;
-
-    if (diff > 70 && this.isMobile) {
-      this.sidebarOpen = true;
-    }
-
-    if (diff < -70 && this.isMobile) {
-      this.sidebarOpen = false;
-    }
-  }
-
-  onMainScroll(event: Event) {
+  protected onMainScroll(event: Event) {
     const el = event.target as HTMLElement;
 
     this.scrollService.scroll$.next({

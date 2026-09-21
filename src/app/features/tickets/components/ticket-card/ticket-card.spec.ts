@@ -14,6 +14,13 @@ describe('TicketCard', () => {
 
     fixture = TestBed.createComponent(TicketCard);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('ticket', {
+      id: 'TASK-1',
+      title: 'Sample',
+      status: 'todo',
+      priority: 'low',
+      assignee: 'K',
+    });
     fixture.detectChanges();
   });
 

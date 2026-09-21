@@ -1,136 +1,61 @@
-import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
+import { ChangeDetectionStrategy, Component, computed, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { SelectOption } from '../../models/dropdowns.model';
 import { TicketFilter } from '../../models/ticket-filter.model';
 
+type FilterKey = keyof TicketFilter;
+
+const EMPTY_FILTERS: TicketFilter = { search: '', priority: '', type: '', assignee: '' };
+
 @Component({
-  standalone: true,
   selector: 'app-ticket-filters',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
+  imports: [FormsModule, InputTextModule, SelectModule],
   templateUrl: './ticket-filters.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './ticket-filters.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TicketFilters {
-  @Output() filtersChange = new EventEmitter<TicketFilter>();
+  readonly filtersChange = output<TicketFilter>();
 
-  filters: TicketFilter = {
-    search: '',
-    priority: '',
-    type: '',
-    assignee: '',
-  };
-
-  selectedPriority?: any;
-  selectedType?: any;
-  selectedAssignee?: any;
-
-  activeFilters: { key: string; label: string }[] = [];
-
-  priorities = [
+  protected readonly priorities: SelectOption[] = [
     { name: 'High', code: 'high' },
     { name: 'Medium', code: 'medium' },
     { name: 'Low', code: 'low' },
   ];
-
-  types = [
+  protected readonly types: SelectOption[] = [
     { name: 'BUG', code: 'BUG' },
     { name: 'TASK', code: 'TASK' },
   ];
+  protected readonly assignees: SelectOption[] = ['K', 'A', 'R', 'D'].map((code) => ({
+    name: code,
+    code,
+  }));
 
-  assignees = [
-    { name: 'K', code: 'K' },
-    { name: 'A', code: 'A' },
-    { name: 'R', code: 'R' },
-    { name: 'D', code: 'D' },
-  ];
+  protected readonly filters = signal<TicketFilter>({ ...EMPTY_FILTERS });
 
-  /* Search */
-  onSearchChange() {
-    this.filters.search = this.filters.search?.trim() || '';
-    this.updateChips();
-    this.emitFilters();
+  protected readonly activeFilters = computed(() => {
+    const f = this.filters();
+    const nameOf = (options: SelectOption[], code: string) =>
+      options.find((o) => o.code === code)?.name ?? code;
+
+    const chips: { key: FilterKey; label: string }[] = [];
+    if (f.search) chips.push({ key: 'search', label: `Search: ${f.search}` });
+    if (f.priority) chips.push({ key: 'priority', label: `Priority: ${nameOf(this.priorities, f.priority)}` });
+    if (f.type) chips.push({ key: 'type', label: `Type: ${nameOf(this.types, f.type)}` });
+    if (f.assignee) chips.push({ key: 'assignee', label: `Assignee: ${nameOf(this.assignees, f.assignee)}` });
+    return chips;
+  });
+
+  protected set(key: FilterKey, value: string | null | undefined) {
+    const next = { ...this.filters(), [key]: (value ?? '').trim() };
+    this.filters.set(next);
+    this.filtersChange.emit(next);
   }
 
-  clearSearch() {
-    this.filters.search = '';
-    this.onSearchChange();
-  }
-
-  /* Dropdowns */
-  onSelectChange() {
-    this.filters.priority = this.selectedPriority?.code || '';
-    this.filters.type = this.selectedType?.code || '';
-    this.filters.assignee = this.selectedAssignee?.code || '';
-
-    this.updateChips();
-    this.emitFilters();
-  }
-
-  /* Chips */
-  updateChips() {
-    this.activeFilters = [];
-
-    if (this.filters.search) {
-      this.activeFilters.push({
-        key: 'search',
-        label: `Search: ${this.filters.search}`,
-      });
-    }
-
-    if (this.selectedPriority) {
-      this.activeFilters.push({
-        key: 'priority',
-        label: `Priority: ${this.selectedPriority.name}`,
-      });
-    }
-
-    if (this.selectedType) {
-      this.activeFilters.push({
-        key: 'type',
-        label: `Type: ${this.selectedType.name}`,
-      });
-    }
-
-    if (this.selectedAssignee) {
-      this.activeFilters.push({
-        key: 'assignee',
-        label: `Assignee: ${this.selectedAssignee.name}`,
-      });
-    }
-  }
-
-  /* Remove single */
-  removeFilter(key: string) {
-    if (key === 'search') this.filters.search = '';
-    if (key === 'priority') this.selectedPriority = undefined;
-    if (key === 'type') this.selectedType = undefined;
-    if (key === 'assignee') this.selectedAssignee = undefined;
-
-    this.onSelectChange();
-    this.onSearchChange();
-  }
-
-  /* Clear all */
-  clearAll() {
-    this.filters = {
-      search: '',
-      priority: '',
-      type: '',
-      assignee: '',
-    };
-
-    this.selectedPriority = undefined;
-    this.selectedType = undefined;
-    this.selectedAssignee = undefined;
-
-    this.activeFilters = [];
-
-    this.emitFilters();
-  }
-
-  /* Emit */
-  emitFilters() {
-    this.filtersChange.emit(this.filters);
+  protected clearAll() {
+    this.filters.set({ ...EMPTY_FILTERS });
+    this.filtersChange.emit({ ...EMPTY_FILTERS });
   }
 }

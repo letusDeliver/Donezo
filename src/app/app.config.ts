@@ -1,40 +1,24 @@
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import Lara from '@primeuix/themes/lara';
 
 import { routes } from './app.routes';
-
-// BEST LIGHT THEME
-import Lara from '@primeng/themes/lara';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-
-    provideZoneChangeDetection({
-      eventCoalescing: true,
-    }),
-
-    provideRouter(routes),
-
-    // ✅ Enable animations (important for dropdowns, ripple, UI feel)
-    provideAnimations(),
-
-    // ✅ PrimeNG setup
+    provideZonelessChangeDetection(),
+    provideRouter(routes, withComponentInputBinding()),
     providePrimeNG({
       ripple: true,
-
       theme: {
         preset: Lara,
-
-        options: {
-          darkModeSelector: false, // 🔥 force light theme
-        },
+        options: { darkModeSelector: false }, // force light theme
       },
     }),
   ],

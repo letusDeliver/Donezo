@@ -1,26 +1,19 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { TicketCard } from '../ticket-card/ticket-card';
 import { Ticket } from '../../models/ticket.model';
 
 @Component({
-  standalone: true,
   selector: 'app-kanban-column',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, TicketCard],
+  imports: [NgClass, TicketCard],
   templateUrl: './kanban-column.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kanban-column.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KanbanColumn {
-  @Input() title!: string;
-  @Input() tickets: Ticket[] = [];
-  @Input() loading: boolean = false;
-
-  // 🔥 Needed for dynamic color
-  @Input() status!: string;
-
-  trackById(index: number, item: Ticket) {
-    return item.id + index;
-  }
+  readonly title = input.required<string>();
+  /** Drives the status dot colour. */
+  readonly status = input.required<string>();
+  readonly tickets = input<Ticket[]>([]);
+  readonly loading = input(false);
 }

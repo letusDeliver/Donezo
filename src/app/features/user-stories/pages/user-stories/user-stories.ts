@@ -1,113 +1,106 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
-import { StoryService } from '../../services/user-story.service';
-import { UserStory } from '../../models/user-story.model';
-import { AddStoryModal } from '../../components/add-story-modal/add-story-modal';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { StoryService } from '../../services/user-story.service';
+import { UserStory, prioritySeverity, statusSeverity } from '../../models/user-story.model';
+import { AddStoryModal } from '../../components/add-story-modal/add-story-modal';
 import { StoryDetail } from '../../components/story-detail/story-detail';
 
+const newStory = (): UserStory => ({
+  id: Date.now(),
+  title: '',
+  description: '',
+  status: 'backlog',
+  priority: 'medium',
+  assignee: { name: 'Kunal' },
+  storyPoints: 0,
+  createdAt: new Date(),
+});
+
 @Component({
-  standalone: true,
   selector: 'app-user-stories',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS, AddStoryModal, StoryDetail],
+  imports: [
+    DatePipe,
+    TableModule,
+    ButtonModule,
+    TagModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    AddStoryModal,
+    StoryDetail,
+  ],
   templateUrl: './user-stories.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-stories.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserStories {
-  private storyService = inject(StoryService);
-  private router: Router = inject(Router);
+  private readonly storyService = inject(StoryService);
+  private readonly router = inject(Router);
 
-  stories: UserStory[] = [];
-  selectedStory: UserStory | null = null;
-  show_create_story_modal = false;
-  loading = true;
-  search = '';
+  protected readonly stories = signal<UserStory[]>([]);
+  protected readonly loading = signal(true);
 
-  show_story_details_modal: boolean = false;
-  selected_story_details: UserStory | null = null;
+  protected readonly editorOpen = signal(false);
+  protected readonly editedStory = signal<UserStory | null>(null);
 
-  ngOnInit() {
-    this.storyService.getUserStories().then((data) => {
-      this.stories = data;
-      this.loading = false;
-    });
+  protected readonly detailOpen = signal(false);
+  protected readonly detailStory = signal<UserStory | null>(null);
+
+  protected readonly statusSeverity = statusSeverity;
+  protected readonly prioritySeverity = prioritySeverity;
+
+  constructor() {
+    this.storyService
+      .getUserStories()
+      .pipe(takeUntilDestroyed())
+      .subscribe((data) => {
+        this.stories.set(data);
+        this.loading.set(false);
+      });
   }
 
-  getStatusSeverity(status: string) {
-    switch (status) {
-      case 'backlog':
-        return 'info';
-      case 'in-progress':
-        return 'warn';
-      case 'done':
-        return 'success';
-      default:
-        return null;
-    }
+  protected openNew() {
+    this.editedStory.set(newStory());
+    this.editorOpen.set(true);
   }
 
-  getPrioritySeverity(priority: string) {
-    switch (priority) {
-      case 'high':
-        return 'danger';
-      case 'medium':
-        return 'warn';
-      case 'low':
-        return 'success';
-      default:
-        return null;
-    }
+  protected editStory(story: UserStory) {
+    this.editedStory.set({ ...story });
+    this.editorOpen.set(true);
   }
 
-  deleteStory(id: number) {
-    this.stories = this.stories.filter((s) => s.id !== id);
+  protected deleteStory(id: number) {
+    this.stories.update((list) => list.filter((s) => s.id !== id));
   }
 
-  openNew() {
-    this.selectedStory = {
-      id: Date.now(),
-      title: '',
-      description: '',
-      status: 'backlog',
-      priority: 'medium',
-      assignee: { name: 'Kunal' },
-      storyPoints: 0,
-      createdAt: new Date(),
-    };
-
-    this.show_create_story_modal = true;
+  protected handleSave(story: UserStory) {
+    this.stories.update((list) =>
+      list.some((s) => s.id === story.id)
+        ? list.map((s) => (s.id === story.id ? story : s))
+        : [...list, story],
+    );
+    this.editorOpen.set(false);
   }
 
-  editStory(story: UserStory) {
-    this.selectedStory = { ...story };
-    this.show_create_story_modal = true;
+  protected viewStory(story: UserStory) {
+    this.detailStory.set(story);
+    this.detailOpen.set(true);
   }
 
-  handleSave(story: UserStory) {
-    const index = this.stories.findIndex((s) => s.id === story.id);
-
-    if (index > -1) {
-      this.stories[index] = story;
-    } else {
-      this.stories.push(story);
-    }
-
-    this.show_create_story_modal = false;
-  }
-
-  createWithAi() {
-    this.router.navigate(['user-stories/create-with-ai']);
-  }
-
-  viewStory(event: any) {
-    this.show_story_details_modal = true;
-    this.selected_story_details = event;
-  }
-
-  editStoryFromModal(story: UserStory) {
-    this.show_story_details_modal = false;
+  protected editStoryFromDetail(story: UserStory) {
+    this.detailOpen.set(false);
     this.editStory(story);
+  }
+
+  protected createWithAi() {
+    this.router.navigate(['user-stories/create-with-ai']);
   }
 }

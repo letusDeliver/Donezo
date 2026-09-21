@@ -1,56 +1,29 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ANGULAR_IMPORTS } from '../../../../shared/ui/angular-imports';
-import { PRIMENG_IMPORTS } from '../../../../shared/ui/primeng-imports';
-import { UserStory } from '../../models/user-story.model';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { UserStory, prioritySeverity, statusSeverity } from '../../models/user-story.model';
 
 @Component({
-  standalone: true,
   selector: 'app-story-detail',
-  imports: [...ANGULAR_IMPORTS, ...PRIMENG_IMPORTS],
+  imports: [DatePipe, DialogModule, TagModule, ButtonModule],
   templateUrl: './story-detail.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './story-detail.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoryDetail {
-  @Input() visible: boolean = false;
-  @Input() storyDetails: UserStory | null = null;
+  readonly visible = input(false);
+  readonly story = input<UserStory | null>(null);
 
-  @Output() close_story_detail_modal = new EventEmitter<void>();
-  @Output() edit_story = new EventEmitter<UserStory>();
+  readonly closed = output<void>();
+  readonly edit = output<UserStory>();
 
-  closeStoryDetails() {
-    this.close_story_detail_modal.emit();
-  }
+  protected readonly statusSeverity = statusSeverity;
+  protected readonly prioritySeverity = prioritySeverity;
 
-  onEdit() {
-    if (this.storyDetails) {
-      this.edit_story.emit(this.storyDetails);
-    }
-  }
-
-  getStatusSeverity(status: string) {
-    switch (status) {
-      case 'backlog':
-        return 'info';
-      case 'in-progress':
-        return 'warn';
-      case 'done':
-        return 'success';
-      default:
-        return null;
-    }
-  }
-
-  getPrioritySeverity(priority: string) {
-    switch (priority) {
-      case 'high':
-        return 'danger';
-      case 'medium':
-        return 'warn';
-      case 'low':
-        return 'success';
-      default:
-        return null;
-    }
+  protected onEdit() {
+    const story = this.story();
+    if (story) this.edit.emit(story);
   }
 }

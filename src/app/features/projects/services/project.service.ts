@@ -1,12 +1,9 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { ProjectModel } from '../models/project.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ProjectService {
-  private projectsSubject = new BehaviorSubject<ProjectModel[]>([
+  private readonly _projects = signal<ProjectModel[]>([
     {
       id: '1',
       name: 'Website Redesign',
@@ -23,5 +20,5 @@ export class ProjectService {
     },
   ]);
 
-  projects$ = this.projectsSubject.asObservable();
+  readonly projects = this._projects.asReadonly();
 }

@@ -4,29 +4,31 @@
       <!-- Sidebar -->
       <aside
         class="sidebar-wrapper"
-        [class.open]="sidebarOpen"
-        [class.collapsed]="!isMobile && sidebarCollapsed"
-        [class.hovered]="isHovering"
+        [class.open]="sidebarOpen()"
+        [class.collapsed]="sidebarCollapsed()"
+        [class.hovered]="isHovering()"
         (mouseenter)="onSidebarHover(true)"
         (mouseleave)="onSidebarHover(false)"
         (touchstart)="onTouchStart($event)"
         (touchend)="onTouchEnd($event)"
-        >
-        <app-sidebar [collapsed]="!isMobile && sidebarCollapsed && !isHovering"></app-sidebar>
+      >
+        <app-sidebar [collapsed]="sidebarIconOnly()" />
       </aside>
+
       <!-- RIGHT SIDE -->
       <div class="main-area">
         <app-header
-          [collapsed]="sidebarCollapsed"
+          [collapsed]="sidebarCollapsed()"
           (toggleSidebar)="toggleSidebar()"
           (toggleCollapse)="toggleCollapse()"
-        ></app-header>
+        />
         <main class="content-area" (scroll)="onMainScroll($event)">
-          <div class="content-wrapper"><router-outlet></router-outlet></div>
+          <div class="content-wrapper"><router-outlet /></div>
         </main>
       </div>
+
       <!-- Backdrop -->
-      @if (sidebarOpen) {
+      @if (sidebarOpen()) {
         <div class="sidebar-backdrop" (click)="closeSidebar()"></div>
       }
     </div>

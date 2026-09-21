@@ -3,21 +3,15 @@
   tabindex="0"
   role="button"
   (focus)="onFocus()"
-  [attr.aria-label]="'Ticket ' + ticket.title"
+  [attr.aria-label]="'Ticket ' + ticket().title"
 >
-  <div class="ticket-id">{{ ticket.id }}</div>
+  <div class="ticket-id">{{ ticket().id }}</div>
 
-  <div class="ticket-title">
-    {{ ticket.title }}
-  </div>
+  <div class="ticket-title">{{ ticket().title }}</div>
 
   <div class="ticket-footer">
-    <span class="priority" [ngClass]="ticket.priority">
-      {{ ticket.priority }}
-    </span>
+    <span class="priority" [ngClass]="ticket().priority">{{ ticket().priority }}</span>
 
-    <span class="avatar">
-      {{ ticket.assignee }}
-    </span>
+    <span class="avatar">{{ ticket().assignee }}</span>
   </div>
 </div>

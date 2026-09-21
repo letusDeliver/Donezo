@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-project-table',
   imports: [],
   templateUrl: './project-table.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './project-table.scss',
 })
 export class ProjectTable {
